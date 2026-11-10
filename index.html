@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Company Lookup</title>
+<meta name="description" content="Free company check for credit teams, worldwide: is it real, is it active, who owns it, and is anything wrong? From public registers, with every fact linked to its source.">
+<meta property="og:title" content="Company Lookup">
+<meta property="og:description" content="Free company check for credit teams, worldwide, from public registers.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23111'/%3E%3Ctext x='16' y='21.5' font-family='monospace' font-size='14' font-weight='600' fill='%23fff' text-anchor='middle'%3ELW%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fafafa; --card: #ffffff; --line: #e6e6e6; --text: #1a1a1a; --muted: #5f5f5f;
+    --stop: #b42318; --stop-bg: #fef3f2; --check: #9a5b00; --check-bg: #fffaeb;
+    --note: #475467; --note-bg: #f2f4f7; --clear: #067647; --clear-bg: #ecfdf3;
+    --field: #ffffff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #121212; --card: #181818; --line: #2a2a2a; --text: #ececec; --muted: #a3a3a3;
+      --stop: #ff8a80; --stop-bg: #2a1614; --check: #f5c26b; --check-bg: #2a2110;
+      --note: #c0c7d2; --note-bg: #20242a; --clear: #6fd3a0; --clear-bg: #0f241a;
+      --field: #1d1d1d;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+    font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 15px; line-height: 1.6; }
+  main { max-width: 760px; margin: 0 auto; padding: 48px 16px 64px; }
+  a { color: inherit; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+  a:hover { color: var(--muted); }
+  .back { color: var(--muted); font-size: 13px; }
+  h1 { font-size: 28px; font-weight: 400; margin: 24px 0 4px; }
+  .lede { color: var(--muted); margin: 0 0 28px; max-width: 600px; }
+  form { display: grid; gap: 10px; grid-template-columns: 1fr; }
+  label { font-size: 13px; color: var(--muted); display: block; margin-bottom: 4px; }
+  input, select { width: 100%; font: inherit; color: var(--text); background: var(--field);
+    border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; }
+  input:focus, select:focus { outline: 2px solid var(--muted); outline-offset: 1px; }
+  .row { display: grid; gap: 10px; grid-template-columns: 1fr; align-items: end; }
+  @media (min-width: 620px) { .row { grid-template-columns: 5fr 3fr 3fr; } }
+  button { font: inherit; cursor: pointer; border-radius: 6px; }
+  .primary { background: var(--text); color: var(--bg); border: 0; padding: 10px 18px; justify-self: start; }
+  .ghost { background: none; color: var(--text); border: 1px solid var(--line); padding: 6px 12px; font-size: 13px; }
+  .ghost:hover { border-color: var(--muted); }
+  .msg { margin-top: 20px; color: var(--muted); }
+  .err { color: var(--stop); }
+  .results { list-style: none; padding: 0; margin: 24px 0 0; }
+  .results li button { width: 100%; text-align: left; background: var(--card); color: var(--text);
+    border: 1px solid var(--line); padding: 12px 14px; margin-bottom: 8px; }
+  .results li button:hover { border-color: var(--muted); }
+  .sub { color: var(--muted); font-size: 13px; display: block; }
+  .cov { margin-top: 36px; border-top: 1px solid var(--line); padding-top: 14px; font-size: 13px; }
+  .cov summary { cursor: pointer; color: var(--muted); }
+  .cov summary b { color: var(--text); font-weight: 500; }
+  .cov table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+  .cov td { padding: 5px 8px 5px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .cov td.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; padding-right: 0; }
+  .cov p { color: var(--muted); margin: 8px 0; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 22px; margin-top: 28px; }
+  .card h2 { font-size: 20px; font-weight: 500; margin: 0; overflow-wrap: anywhere; }
+  .verdict { border-radius: 6px; padding: 10px 14px; margin: 16px 0 6px; }
+  .v-stop { background: var(--stop-bg); color: var(--stop); }
+  .v-check { background: var(--check-bg); color: var(--check); }
+  .v-clear { background: var(--clear-bg); color: var(--clear); }
+  .flags { list-style: none; padding: 0; margin: 10px 0 0; }
+  .flags li { padding: 8px 0; border-bottom: 1px solid var(--line); }
+  .flags li:last-child { border-bottom: 0; }
+  .chip { display: inline-block; font-size: 12px; border-radius: 4px; padding: 0 6px; margin-right: 8px; text-transform: uppercase; letter-spacing: .03em; }
+  .c-stop { background: var(--stop-bg); color: var(--stop); }
+  .c-check { background: var(--check-bg); color: var(--check); }
+  .c-note { background: var(--note-bg); color: var(--note); }
+  h3 { font-size: 14px; font-weight: 500; margin: 26px 0 8px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+  dl { display: grid; grid-template-columns: 1fr; gap: 2px 16px; margin: 0; }
+  @media (min-width: 620px) { dl { grid-template-columns: 210px 1fr; } }
+  dt { color: var(--muted); font-size: 13px; padding-top: 6px; }
+  dd { margin: 0; overflow-wrap: anywhere; padding-top: 4px; }
+  @media (min-width: 620px) { dt { padding-top: 4px; } }
+  ul.plain { margin: 0; padding-left: 18px; }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 24px; }
+  footer { margin-top: 48px; color: var(--muted); font-size: 13px; }
+  footer p { margin: 0 0 8px; }
+  .notice { font-size: 13px; color: var(--muted); border-left: 2px solid var(--line); padding-left: 10px; margin: 12px 0 24px; }
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="https://github.com/larsewallin/company-lookup" target="_blank" rel="noopener">github.com/larsewallin/company-lookup</a>
+  <h1>Company Lookup</h1>
+  <p class="lede">Find a company anywhere in the world and see who it is, whether it is active, who owns it, and whether anything looks wrong. Free checks from public registers, with every fact linked to its source.</p>
+  <p class="notice">For information only. Not advice, a credit rating or a credit report, and not for decisions about individuals. Flags are prompts to check, not findings. Confirm anything important at the source.</p>
+
+  <form id="f" autocomplete="off">
+    <div class="row">
+      <div>
+        <label for="q">Company name, LEI, ticker or ISIN</label>
+        <input id="q" name="q" required minlength="2" maxlength="100" placeholder="e.g. Siemens, Tesco PLC, NKE or US6541061031">
+      </div>
+      <div>
+        <label for="c">Country</label>
+        <select id="c" name="c"><option value="">Any country</option></select>
+      </div>
+      <div>
+        <label for="w">Website (optional)</label>
+        <input id="w" name="w" maxlength="300" placeholder="e.g. tesco.com" inputmode="url">
+      </div>
+    </div>
+    <button class="primary" type="submit">Look up</button>
+  </form>
+
+  <div id="out" aria-live="polite"></div>
+
+  <details id="cov" class="cov" hidden>
+    <summary>Coverage</summary>
+    <div id="cov-body"></div>
+  </details>
+
+  <footer>
+    <p>Sources so far: GLEIF (global legal entity register); national registers for the UK, France, Norway, Finland, Estonia, Czechia, Slovakia, Latvia, Poland (KRS number), Switzerland, Ireland, Israel, Singapore, Hong Kong (live companies), Taiwan, Australia, Colombia, Canada (federal corporations and Quebec), Argentina (national companies register), Chile (companies formed since 2013), Peru (SUNAT tax register), Ukraine (legal entities), India (companies and LLPs registered since 2016), the Dominican Republic (DGII taxpayer register), Ecuador (SRI RUC register), Paraguay (DNIT RUC register), Russia (tax service open data: organisations that filed accounts, with revenue), Moldova (State Register), New Caledonia (RIDET), Romania (ONRC trade register), Luxembourg (companies that filed annual accounts, with key figures), Slovenia, Cyprus (monthly open data) and Brazil (CNPJ number); US: SEC EDGAR plus the New York, Colorado, Connecticut, Texas, Oregon and Pennsylvania state registers; the EU VAT check (VIES); Wikidata (CC0); RDAP domain records. Pick a country to search its national register. More national registers are being added one at a time. Flags come from fixed written rules and are prompts to check, not findings of fraud. This is not a credit rating and is not for decisions about individuals.</p>
+    <p>Open source (MIT): <a href="https://github.com/larsewallin/company-lookup" target="_blank" rel="noopener">Company Lookup</a> by Lars E. Wallin. LEI data from GLEIF (CC0). Finnish data © PRH, CC BY 4.0. Norwegian data © Brønnøysund Register Centre (NLOD). Contains public sector information licensed under the Open Government Licence v3.0.</p>
+  </footer>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  var out = document.getElementById('out');
+  var form = document.getElementById('f');
+  var qEl = document.getElementById('q');
+  var cEl = document.getElementById('c');
+  var wEl = document.getElementById('w');
+
+  // Country list, named in the visitor's language.
+  var CODES = 'AD AE AF AG AI AL AM AO AR AS AT AU AW AX AZ BA BB BD BE BF BG BH BI BJ BL BM BN BO BQ BR BS BT BW BY BZ CA CD CF CG CH CI CK CL CM CN CO CR CU CV CW CY CZ DE DJ DK DM DO DZ EC EE EG ER ES ET FI FJ FK FM FO FR GA GB GD GE GF GG GH GI GL GM GN GP GQ GR GT GU GW GY HK HN HR HT HU ID IE IL IM IN IQ IR IS IT JE JM JO JP KE KG KH KI KM KN KP KR KW KY KZ LA LB LC LI LK LR LS LT LU LV LY MA MC MD ME MF MG MH MK ML MM MN MO MP MQ MR MS MT MU MV MW MX MY MZ NA NC NE NG NI NL NO NP NR NZ OM PA PE PF PG PH PK PL PM PR PS PT PW PY QA RE RO RS RU RW SA SB SC SD SE SG SH SI SK SL SM SN SO SR SS ST SV SX SY SZ TC TD TG TH TJ TL TM TN TO TR TT TV TW TZ UA UG US UY UZ VA VC VE VG VI VN VU WS XK YE YT ZA ZM ZW'.split(' ');
+  var dn = null;
+  try { dn = new Intl.DisplayNames([navigator.language || 'en', 'en'], { type: 'region' }); } catch (e) {
+    try { dn = new Intl.DisplayNames(['en'], { type: 'region' }); } catch (e2) { /* very old browser: codes only */ }
+  }
+  function cname(code) { if (!code) return ''; try { return (dn && dn.of(code)) || code; } catch (e) { return code; } }
+  CODES.map(function (c) { return [c, cname(c)]; })
+    .sort(function (a, b) { return a[1].localeCompare(b[1]); })
+    .forEach(function (p) { var o = document.createElement('option'); o.value = p[0]; o.textContent = p[1]; cEl.appendChild(o); });
+
+  function h(tag, attrs) {
+    var el = document.createElement(tag);
+    if (attrs) for (var k in attrs) {
+      if (k === 'class') el.className = attrs[k];
+      else if (k === 'onclick') el.addEventListener('click', attrs[k]);
+      else el.setAttribute(k, attrs[k]);
+    }
+    for (var i = 2; i < arguments.length; i++) {
+      var c = arguments[i];
+      if (c == null || c === false) continue;
+      if (Array.isArray(c)) c.forEach(function (x) { if (x != null && x !== false) el.appendChild(typeof x === 'string' ? document.createTextNode(x) : x); });
+      else el.appendChild(typeof c === 'string' || typeof c === 'number' ? document.createTextNode(String(c)) : c);
+    }
+    return el;
+  }
+  function clear() { while (out.firstChild) out.removeChild(out.firstChild); }
+  function msg(text, isErr) { clear(); out.appendChild(h('p', { class: 'msg' + (isErr ? ' err' : '') }, text)); }
+
+  function getJson(url) {
+    return fetch(url).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (body) { return { status: r.status, body: body }; });
+    });
+  }
+
+  function setUrl(id, website) {
+    var p = new URLSearchParams();
+    if (id) p.set('id', id);
+    if (website) p.set('website', website);
+    history.replaceState(null, '', id ? '?' + p.toString() : location.pathname);
+  }
+
+  function search(q, country) {
+    msg('Searching…');
+    getJson('/api/search?q=' + encodeURIComponent(q) + (country ? '&country=' + country : '')).then(function (r) {
+      if (r.status !== 200) return msg(r.body.error || 'Search failed.', true);
+      var res = r.body.results || [];
+      var where = country ? ' in ' + cname(country) : '';
+      if (!res.length) {
+        return msg('No match for "' + q + '"' + where + '. Try the full legal name, another spelling, or a different country. For Brazil and Poland, type the company number (CNPJ or KRS); for Taiwan, use the Chinese name or the 8-digit number. Small companies often have no LEI, and only some national registers are connected so far.', true);
+      }
+      clear();
+      (r.body.warnings || []).forEach(function (w) { out.appendChild(h('p', { class: 'msg err' }, w)); });
+      out.appendChild(h('p', { class: 'msg' }, res.length === 1 ? 'One match. Pick it to see the card.' : res.length + ' matches' + where + '. Pick the right company.'));
+      out.appendChild(h('ul', { class: 'results' }, res.map(function (c) {
+        return h('li', null, h('button', { type: 'button', onclick: function () { company(c.id, wEl.value.trim()); } },
+          c.name,
+          h('span', { class: 'sub' }, [c.city, cname(c.country), c.number ? 'no. ' + c.number : null, c.status, c.incorporated ? 'inc. ' + c.incorporated : null].filter(Boolean).join(' · ')),
+          h('span', { class: 'sub' }, (c.ticker ? 'Ticker ' + c.ticker + ' · ' : '') + (c.isin ? 'Issuer of ISIN ' + c.isin + ' · ' : '') + 'Source: ' + c.source + (c.lei ? ' · LEI ' + c.lei : ''))));
+      })));
+    }).catch(function () { msg('Search failed. Check your connection and try again.', true); });
+  }
+
+  function company(id, website) {
+    msg('Checking the registers…');
+    var url = '/api/company?id=' + encodeURIComponent(id) + (website ? '&website=' + encodeURIComponent(website) : '');
+    getJson(url).then(function (r) {
+      if (r.status === 404) {
+        clear();
+        out.appendChild(h('div', { class: 'card' }, h('div', { class: 'verdict v-stop' }, 'Not found on the register'), h('p', null, r.body.error || 'No such company.')));
+        return;
+      }
+      if (r.status !== 200) return msg(r.body.error || 'Lookup failed.', true);
+      setUrl(r.body.id, website);
+      render(r.body);
+    }).catch(function () { msg('Lookup failed. Check your connection and try again.', true); });
+  }
+
+  function row(label, value) {
+    if (value == null || value === '' || (Array.isArray(value) && !value.length)) value = 'Not available';
+    return [h('dt', null, label), h('dd', null, value)];
+  }
+  function link(href, text) { return h('a', { href: href, target: '_blank', rel: 'noopener' }, text); }
+  function list(items) { return items && items.length ? h('ul', { class: 'plain' }, items.map(function (x) { return h('li', null, x); })) : null; }
+  function party(p) { return p ? p.name + (p.country ? ' (' + cname(p.country) + ')' : '') : 'None reported'; }
+
+  var VERDICT = {
+    stop: 'Stop: a person should review before any credit is given.',
+    check: 'Check: look into the flags below before deciding.',
+    clear: 'No warning flags from the checks run.'
+  };
+
+  function render(c) {
+    clear();
+    var id = c.identity;
+    var card = h('article', { class: 'card' });
+    card.appendChild(h('h2', null, id.legal_name));
+    card.appendChild(h('div', { class: 'sub' }, [cname(id.country), id.register && id.register.number ? 'no. ' + id.register.number : null, id.status, id.age ? id.age + ' old' : null].filter(Boolean).join(' · ')));
+    card.appendChild(h('div', { class: 'verdict v-' + c.verdict }, VERDICT[c.verdict]));
+    if (c.flags.length) {
+      card.appendChild(h('ul', { class: 'flags' }, c.flags.map(function (f) {
+        return h('li', null, h('span', { class: 'chip c-' + f.level }, f.level), h('strong', null, f.label), ' ',
+          h('span', { class: 'sub' }, f.detail + (f.source ? ' Source: ' + f.source + '.' : '')));
+      })));
+    }
+
+    card.appendChild(h('h3', null, 'Identity'));
+    card.appendChild(h('dl', null,
+      row('Legal name', id.legal_name),
+      row('Country', cname(id.country)),
+      row('Status', [id.status, id.status_detail].filter(Boolean).join(' · ')),
+      row('Legal form', id.legal_form),
+      row('Incorporated', id.incorporated ? id.incorporated + (id.age ? ' (' + id.age + ')' : '') + (id.incorporated_source === 'GLEIF' ? ' · as reported to GLEIF; may be the date of its current legal form' : '') : null),
+      id.ceased ? row('Ceased', id.ceased) : null,
+      row('Registered address', id.registered_address),
+      id.hq_address ? row('Headquarters', id.hq_address) : null,
+      id.sic_codes && id.sic_codes.length ? row('Industry (SIC)', id.sic_codes.join(', ')) : null,
+      id.industry && id.industry.length ? row('Industry', list(id.industry)) : null,
+      id.employees ? row('Employees', id.employees) : null,
+      id.size ? row('Size', id.size) : null,
+      id.website ? row('Website', link(/^https?:/.test(id.website) ? id.website : 'https://' + id.website, id.website)) : null,
+      id.vat && id.vat.number ? row('VAT number', id.vat.number + (id.vat.vies ? (id.vat.vies.valid ? ' (valid in VIES ' + (id.vat.vies.checked || '') + ')' : ' (NOT valid in VIES)') : id.vat.registered === true ? ' (VAT registered)' : id.vat.registered === false ? ' (not VAT registered)' : '')) : null,
+      id.share_capital ? row('Share capital', id.share_capital) : null,
+      [].concat.apply([], (id.extra || []).map(function (x) { return row(x[0], x[1]); })),
+      id.auditor ? row('Auditor', id.auditor) : null,
+      id.other_names && id.other_names.length ? row('Other names', list(id.other_names)) : null,
+      id.former_names && id.former_names.length ? row('Former names', list(id.former_names.map(function (n) { return n.name + (n.to ? ' (until ' + n.to + ')' : ''); }))) : null
+    ));
+
+    card.appendChild(h('h3', null, 'Identifiers'));
+    card.appendChild(h('dl', null,
+      row('Register', id.register ? [id.register.url ? link(id.register.url, id.register.name) : id.register.name, id.register.number ? ', no. ' + id.register.number : ''] : null),
+      row('LEI', c.ids.lei ? link('https://search.gleif.org/#/record/' + c.ids.lei, c.ids.lei) : 'None (common for small companies)'),
+      c.ids.isins ? row('Securities (ISIN)', [c.ids.isins.items.slice(0, 3).join(', '), c.ids.isins.total > 3 ? ' and ' + (c.ids.isins.total - 3) + ' more' : '', ' · ', link('https://search.gleif.org/#/record/' + c.ids.lei, 'See all in GLEIF')]) : null,
+      c.ids.opencorporates ? row('OpenCorporates', link(c.ids.opencorporates, 'View record')) : null
+    ));
+
+    if (c.group) {
+      var gr = c.group;
+      var co = function (p) { return p ? h('span', null, h('a', { href: '?id=lei:' + p.lei }, p.name), (p.country ? ' (' + cname(p.country) + ')' : '') + (p.status && p.status !== 'active' ? ' · ' + p.status : '')) : null; };
+      var subs = gr.subsidiaries;
+      var wdSubs = c.about && c.about.subsidiaries && c.about.subsidiaries.length ? c.about.subsidiaries : null;
+      card.appendChild(h('h3', null, 'Group'));
+      card.appendChild(h('dl', null,
+        gr.lei ? row('Direct parent', gr.direct_parent ? co(gr.direct_parent) : (gr.no_parent_reason || 'None reported')) : row('Parents', 'Not available without an LEI'),
+        gr.lei && gr.ultimate_parent && (!gr.direct_parent || gr.ultimate_parent.lei !== gr.direct_parent.lei) ? row('Ultimate parent', co(gr.ultimate_parent)) : null,
+        gr.lei && gr.direct_parent && gr.ultimate_parent && gr.ultimate_parent.lei === gr.direct_parent.lei ? row('Ultimate parent', 'Same as direct parent') : null,
+        gr.group_size ? row('Group size', new Intl.NumberFormat('en').format(gr.group_size) + ' entities with an LEI under the ultimate parent') : null,
+        subs && subs.total ? row('Subsidiaries', h('div', null,
+          h('div', null, new Intl.NumberFormat('en').format(subs.total) + ' direct' + (gr.all_subsidiaries_total && gr.all_subsidiaries_total !== subs.total ? ', ' + new Intl.NumberFormat('en').format(gr.all_subsidiaries_total) + ' in total' : '')),
+          h('ul', { class: 'plain' }, subs.items.map(function (x) { return h('li', null, co(x)); })),
+          subs.total > subs.items.length ? h('div', { class: 'sub' }, 'Showing ' + subs.items.length + ' of ' + subs.total + '. ', link('https://search.gleif.org/#/record/' + gr.lei, 'See all in GLEIF')) : null)) : null,
+        gr.lei && subs && !subs.total ? row('Subsidiaries', 'None with an LEI reported') : null,
+        (!subs || !subs.total) && wdSubs ? row('Subsidiaries (Wikidata)', list(wdSubs)) : null
+      ));
+    }
+
+    if (c.about) {
+      var ab = c.about;
+      card.appendChild(h('h3', null, 'About (Wikidata)'));
+      card.appendChild(h('dl', null,
+        ab.hq ? row('Headquarters', ab.hq.city + (ab.hq.country ? ' (' + cname(ab.hq.country) + ')' : '')) : null,
+        ab.founded ? row('Founded', ab.founded) : null,
+        ab.industries && ab.industries.length ? row('Industry', ab.industries.join(', ')) : null,
+        ab.employees ? row('Employees', new Intl.NumberFormat('en').format(ab.employees.count) + (ab.employees.as_of ? ' (' + ab.employees.as_of.slice(0, 4) + ')' : '')) : null,
+        ab.listings && ab.listings.length ? row('Listed on', list(ab.listings.map(function (x) { return x.exchange + (x.ticker ? ': ' + x.ticker : ''); }))) : null,
+        ab.parents && ab.parents.length ? row('Parent', list(ab.parents.map(function (x) { return x.name; }))) : null,
+        ab.wikipedia ? row('Wikipedia', link(ab.wikipedia, 'Read article')) : null
+      ));
+    }
+
+    if (c.people) {
+      card.appendChild(h('h3', null, 'People'));
+      card.appendChild(h('dl', null,
+        row('Officers', c.people.officers ? (list(c.people.officers.map(function (o) { return o.name + (o.role ? ', ' + o.role : '') + (o.appointed ? ' since ' + o.appointed : ''); })) || 'None listed') : null),
+        c.people.owners === null ? null : row('Owners (significant control)', c.people.owners ? (list(c.people.owners.map(function (o) { return o.name + (o.control.length ? ': ' + o.control.join(', ') : ''); })) || 'None listed') : null)
+      ));
+    }
+
+    if (c.financials) {
+      var fin = c.financials;
+      var money = function (v) { return v == null ? null : new Intl.NumberFormat('en', { style: 'currency', currency: fin.currency || 'EUR', maximumFractionDigits: 0 }).format(v); };
+      card.appendChild(h('h3', null, 'Financials (' + fin.year + ', as published)'));
+      card.appendChild(h('dl', null, row('Revenue', money(fin.revenue)), row('Net result', money(fin.net_result))));
+    }
+
+    if (c.filings && c.filings.last_accounts_year && !c.filings.next_accounts_due) {
+      card.appendChild(h('h3', null, 'Filings'));
+      card.appendChild(h('dl', null, row('Latest annual accounts filed', c.filings.last_accounts_year)));
+    } else if (c.filings) {
+      var fl = c.filings;
+      card.appendChild(h('h3', null, 'Filings'));
+      card.appendChild(h('dl', null,
+        row('Last accounts made up to', fl.last_accounts_made_up_to ? fl.last_accounts_made_up_to + (fl.last_accounts_type ? ' (' + fl.last_accounts_type.toLowerCase() + ')' : '') : 'None filed'),
+        row('Next accounts due', fl.next_accounts_due ? fl.next_accounts_due + (fl.accounts_overdue ? ' (overdue)' : '') : null),
+        row('Confirmation statement due', fl.next_confirmation_statement_due ? fl.next_confirmation_statement_due + (fl.confirmation_statement_overdue ? ' (overdue)' : '') : null)
+      ));
+    }
+
+    if (c.charges) {
+      card.appendChild(h('h3', null, 'Secured lending'));
+      card.appendChild(h('dl', null,
+        row('Outstanding charges', c.charges.outstanding + ' of ' + c.charges.total + ' registered'),
+        c.charges.lenders && c.charges.lenders.length ? row('Secured lenders', c.charges.lenders.join('; ')) : null
+      ));
+    }
+
+    if (c.web) {
+      card.appendChild(h('h3', null, 'Website'));
+      card.appendChild(h('dl', null,
+        row('Domain', c.web.domain + (c.web.from && c.web.from !== 'entered' ? ' (from ' + c.web.from + ')' : '')),
+        row('Domain registered', c.web.registered ? c.web.registered + (c.web.age ? ' (' + c.web.age + ')' : '') : null)
+      ));
+    }
+
+    card.appendChild(h('h3', null, 'Sources and gaps'));
+    card.appendChild(h('ul', { class: 'plain' },
+      c.sources.map(function (s) { return h('li', null, link(s.url, s.name), ': ' + s.result); }),
+      c.gaps.map(function (g) { return h('li', { class: 'sub' }, g); })
+    ));
+
+    card.appendChild(h('h3', null, 'Next step'));
+    card.appendChild(h('p', { style: 'margin:0' }, c.next_step));
+
+    card.appendChild(h('div', { class: 'actions' },
+      h('button', { class: 'ghost', type: 'button', onclick: function () { download(c); } }, 'Download JSON'),
+      h('button', { class: 'ghost', type: 'button', onclick: function (e) { copyLink(e.target); } }, 'Copy link')
+    ));
+    card.appendChild(h('p', { class: 'sub', style: 'margin-top:14px' }, 'Checked ' + c.as_of + '. Young company: under ' + c.rules.youngCompanyMonths + ' months; new domain, name change and new lending: last ' + c.rules.recentChangeMonths + ' months.'));
+    out.appendChild(card);
+  }
+
+  function download(c) {
+    var blob = new Blob([JSON.stringify(c, null, 2)], { type: 'application/json' });
+    var a = h('a', { href: URL.createObjectURL(blob), download: 'company-' + (c.ids.lei || c.ids.national || 'card') + '-' + c.as_of + '.json' });
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+  function copyLink(btn) {
+    try { navigator.clipboard.writeText(location.href).then(function () { btn.textContent = 'Link copied'; }); } catch (e) { /* ignore */ }
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var q = qEl.value.trim();
+    var country = cEl.value;
+    if (q.length < 2) return;
+    var compact = q.replace(/\s+/g, '').toUpperCase();
+    if (/^[A-Z0-9]{18}[0-9]{2}$/.test(compact)) return company('lei:' + compact, wEl.value.trim());
+    setUrl(null);
+    search(q, country);
+  });
+
+  var params = new URLSearchParams(location.search);
+  var startId = params.get('id') || (params.get('number') ? 'gb:' + params.get('number') : '');
+  if (startId) {
+    if (params.get('website')) wEl.value = params.get('website');
+    company(startId, params.get('website') || '');
+  }
+
+  // ---- Coverage panel: counts each source reports about itself, summed on the server ----
+  (function () {
+    var box = document.getElementById('cov'); var body = document.getElementById('cov-body');
+    if (!box || !window.fetch) return;
+    fetch('/api/coverage').then(function (r) { return r.ok ? r.json() : null; }).then(function (c) {
+      if (!c || !c.total) return;
+      var fmt = function (n) { return Number(n).toLocaleString(); };
+      box.querySelector('summary').innerHTML = '';
+      box.querySelector('summary').appendChild(h('span', null, 'Coverage: ', h('b', null, fmt(c.total)), ' companies in ' + c.countries_counted + ' countries’ registers (estimate, ' + c.as_of + ')'));
+      var rows = c.sources.slice().sort(function (a, b) { return (b.count || 0) - (a.count || 0); }).map(function (x) {
+        return h('tr', null, h('td', null, cname(x.country)), h('td', null, x.name, h('span', { class: 'sub' }, x.what)), h('td', { class: 'n' }, x.count != null ? fmt(x.count) : 'not available today', x.basis === 'published' ? h('span', { class: 'sub' }, 'published figure, ' + x.as_of) : null));
+      });
+      body.appendChild(h('table', null, h('tbody', null, rows)));
+      body.appendChild(h('p', null, 'Searchable but not counted: ' + c.not_counted.map(function (x) { return cname(x.country) + ' (' + x.name + ')'; }).join(', ') + '.'));
+      if (c.gleif_lei_records) body.appendChild(h('p', null, 'Worldwide: ' + fmt(c.gleif_lei_records) + ' LEI records in GLEIF, plus Wikidata. These overlap with the registers, so they are not added to the total.'));
+      box.hidden = false;
+    }).catch(function () { /* panel stays hidden */ });
+  })();
+})();
+</script>
+</body>
+</html>

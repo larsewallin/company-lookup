@@ -1,0 +1,107 @@
+{
+  "cleanUrls": true,
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    }
+  ],
+  "functions": {
+    "api/search.js": {
+      "maxDuration": 30
+    },
+    "api/company.js": {
+      "maxDuration": 30
+    },
+    "api/bulk-import.js": {
+      "maxDuration": 800
+    },
+    "api/coverage.js": {
+      "maxDuration": 60
+    },
+    "api/bulk-import-eu.js": {
+      "maxDuration": 800,
+      "regions": [
+        "fra1"
+      ]
+    },
+    "api/mcp.js": {
+      "maxDuration": 60
+    }
+  },
+  "crons": [
+    {
+      "path": "/api/bulk-import?country=CY",
+      "schedule": "23 5 3 * *"
+    },
+    {
+      "path": "/api/bulk-import?country=CA",
+      "schedule": "41 6 5 * *"
+    },
+    {
+      "path": "/api/bulk-import?country=QC",
+      "schedule": "13 7 4 * *"
+    },
+    {
+      "path": "/api/bulk-import?country=AR",
+      "schedule": "29 8 6 * *"
+    },
+    {
+      "path": "/api/bulk-import?country=SI",
+      "schedule": "47 8 7 * *"
+    },
+    {
+      "path": "/api/bulk-import?country=CL",
+      "schedule": "5 9 8 * *"
+    },
+    {
+      "path": "/api/bulk-import?country=PE",
+      "schedule": "37 9 9 * *"
+    },
+    {
+      "path": "/api/bulk-import?country=UA",
+      "schedule": "53 9 10 * *"
+    },
+    {
+      "path": "/api/bulk-import?country=IN",
+      "schedule": "17 10 11 * *"
+    },
+    {
+      "path": "/api/bulk-import?country=DO",
+      "schedule": "41 10 12 * *"
+    },
+    {
+      "path": "/api/bulk-import?country=EC",
+      "schedule": "7 11 13 * *"
+    },
+    {
+      "path": "/api/bulk-import?country=PY",
+      "schedule": "29 11 14 * *"
+    },
+    {
+      "path": "/api/bulk-import?country=RU",
+      "schedule": "47 11 26 * *"
+    },
+    {
+      "path": "/api/bulk-import?country=MD",
+      "schedule": "13 12 27 * *"
+    },
+    {
+      "path": "/api/bulk-import-eu?country=RO",
+      "schedule": "39 12 28 * *"
+    },
+    {
+      "path": "/api/bulk-import?country=LU",
+      "schedule": "21 13 2 * *"
+    }
+  ]
+}
