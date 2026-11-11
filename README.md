@@ -1,5 +1,7 @@
 # Company Lookup
 
+[![Tests](https://github.com/larsewallin/company-lookup/actions/workflows/test-and-deploy.yml/badge.svg)](https://github.com/larsewallin/company-lookup/actions/workflows/test-and-deploy.yml) [![MIT licence](https://img.shields.io/badge/licence-MIT-blue.svg)](LICENSE)
+
 **An open-source library of the world's publicly available company registers.** Give it a company name, registration number, LEI, ISIN or stock ticker. It searches official national registers, the global LEI register (GLEIF), Wikidata, the EU VAT check (VIES) and domain records. Then it returns one **company card**: legal name, status, address, incorporation date, officers where the register publishes them, parent companies, VAT validity, website age and warning flags. Every fact carries its source and the date it was checked.
 
 Built for credit, finance, procurement and compliance teams who need to know whether a new customer or supplier is real and in good standing.
