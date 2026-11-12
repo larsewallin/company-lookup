@@ -91,10 +91,21 @@ Every setting is optional. Put them in `.env` (read by `server.js`) or in your h
 | Variable | What it is for |
 |---|---|
 | `COMPANY_LOOKUP_USER_AGENT` | Identifies your app to the registers. **Set it** to your app name and a contact e-mail, e.g. `Acme credit-tools (credit@acme.com)`. SEC EDGAR requires a contact. |
-| `COMPANIES_HOUSE_API_KEY` | UK lookups. A free key from the [Companies House developer hub](https://developer.company-information.service.gov.uk/). Without it, UK companies are found only through GLEIF. |
+| `COMPANIES_HOUSE_API_KEY` | UK lookups: officers, owners, filings, secured lending and insolvency history. Free; see [Getting a Companies House key](#getting-a-companies-house-key). Without it, UK companies are found only through GLEIF. |
 | `DATA_GOV_SG_API_KEY` | Optional higher rate limits for Singapore. |
 | `BLOB_READ_WRITE_TOKEN` | Your Vercel Blob store, for the hosted-index countries. |
 | `SEC_USER_AGENT` | Overrides the User-Agent for SEC EDGAR only. |
+
+### Getting a Companies House key
+
+The key is free and works straight away.
+
+1. Register at the [Companies House developer hub](https://developer.company-information.service.gov.uk/).
+2. Create an application with the **Live** environment. Test applications are refused by the live API.
+3. Add a key of type **REST**, not Stream, and leave its IP and domain restrictions empty: servers such as Vercel call from changing addresses.
+4. Copy the key **by hand**, by selecting the text. The hub's copy button can fail and copy nothing.
+5. Set it as `COMPANIES_HOUSE_API_KEY`, in `.env` or your hosting provider's settings, then restart or redeploy.
+6. Check it: search for `Tesco` with country `GB`. Results should show `Source: Companies House`. If the key is refused, the search shows a warning that names `COMPANIES_HOUSE_API_KEY`.
 
 ## Hosted-index countries
 
