@@ -46,3 +46,11 @@ if (mode === 'find') {
     start += cnt;
   }
 }
+if (mode === 'compact') {
+  const out = JSON.parse(fs.readFileSync('/vercel/probe/rows.json', 'utf8'));
+  const keep = ['property', 'dataset', 'license', 'record_id', 'update_time', 'confidence'];
+  const c = out.map(({ release, row }) => ({ release, row: { ...row, sources: row.sources.map((s) => Object.fromEntries(keep.map((k) => [k, s[k]]))) } }));
+  fs.writeFileSync('/vercel/probe/compact.json', JSON.stringify(c));
+  console.log(c.map((x) => JSON.stringify(x).length).join(' '));
+}
+if (mode === 'c') console.log(JSON.stringify(JSON.parse(fs.readFileSync('/vercel/probe/compact.json', 'utf8'))[Number(args[0])]));
