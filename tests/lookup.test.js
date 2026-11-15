@@ -346,9 +346,21 @@ test('GLEIF ranking puts the exact company first', () => {
     r('Siemens Beteiligungen Europa GmbH', 'INACTIVE'), r('Siemens Aktiengesellschaft'), r('Valentin Siemens Verpachtungs UG'),
   ], 'siemens').map((x) => x.attributes.lei);
   assert.equal(order[0], 'Siemens Aktiengesellschaft');
-  assert.equal(order[order.length - 1], 'SHC Trust e.V.');
-  assert.ok(order.indexOf('Siemens High Yield') > order.indexOf('Siemens Advanta Solutions GmbH'), 'funds after companies');
+  assert.equal(order[order.length - 2], 'SHC Trust e.V.', 'weakest company match last among companies');
+  assert.equal(order[order.length - 1], 'Siemens High Yield', 'funds after every company');
   assert.equal(normName('Société Générale S.A.'), 'societe generale');
+  const { summary } = require('../lib/gleif');
+  assert.equal(summary(r('Siemens High Yield', 'ACTIVE', 'FUND')).kind, 'fund');
+  assert.equal(summary(r('Siemens Aktiengesellschaft')).kind, undefined);
+});
+
+test('PSC exemption: listed companies get a note instead of an empty owners list', () => {
+  const { pscExemption } = require('../lib/card');
+  const note = pscExemption({ kind: 'exemptions', exemptions: { psc_exempt_as_trading_on_regulated_market: {
+    exemption_type: 'psc-exempt-as-trading-on-regulated-market', items: [{ exempt_from: '2016-06-30' }] } } });
+  assert.match(note, /^Exempt from the register of people with significant control because its shares trade on a regulated market \(since 2016-06-30\)/);
+  assert.equal(pscExemption({ exemptions: { psc_exempt_as_trading_on_regulated_market: { items: [{ exempt_from: '2016-06-30', exempt_to: '2020-01-01' }] } } }), null, 'ended exemption');
+  assert.equal(pscExemption(null), null);
 });
 
 // ---------- national registers (fixtures trimmed from real responses, Nov 2026) ----------
