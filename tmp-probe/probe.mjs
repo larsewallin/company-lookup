@@ -54,3 +54,35 @@ if (mode === 'compact') {
   console.log(c.map((x) => JSON.stringify(x).length).join(' '));
 }
 if (mode === 'c') console.log(JSON.stringify(JSON.parse(fs.readFileSync('/vercel/probe/compact.json', 'utf8'))[Number(args[0])]));
+if (mode === 'countries') {
+  // Estimate place counts per country by sampling every Nth row group of every file.
+  const { parquetMetadataAsync, parquetReadObjects, asyncBufferFromUrl } = await import('hyparquet');
+  const zlib = await import('node:zlib');
+  const compressors = { ZSTD: (i) => new Uint8Array(zlib.zstdDecompressSync(i)) };
+  const ov = createOverture();
+  const R = await ov.latestRelease();
+  const step = Number(args[0] || 20);
+  const counts = {}; let total = 0; let sampledRows = 0; const t = Date.now();
+  await Promise.all((await ov.items(R)).map(async (it) => {
+    const file = await asyncBufferFromUrl({ url: it.url });
+    const md = await parquetMetadataAsync(file);
+    let start = 0;
+    for (let i = 0; i < md.row_groups.length; i++) {
+      const n = Number(md.row_groups[i].num_rows); total += n;
+      if (i % step === 0) {
+        const rows = await parquetReadObjects({ file, metadata: md, compressors, rowStart: start, rowEnd: start + n, columns: ['addresses'] });
+        sampledRows += rows.length;
+        for (const r of rows) { const c = (r.addresses && r.addresses[0] && r.addresses[0].country) || '??'; counts[c] = (counts[c] || 0) + 1; }
+      }
+      start += n;
+    }
+  }));
+  const scale = total / sampledRows;
+  const est = Object.fromEntries(Object.entries(counts).map(([k, v]) => [k, Math.round(v * scale)]).sort((a, b) => b[1] - a[1]));
+  fs.writeFileSync('/vercel/probe/countries.json', JSON.stringify({ release: R, total, sampledRows, est }));
+  console.log('total', total, 'sampled', sampledRows, 'secs', Math.round((Date.now() - t) / 1000));
+}
+if (mode === 'cshow') {
+  const o = JSON.parse(fs.readFileSync('/vercel/probe/countries.json', 'utf8'));
+  console.log(o.release, o.total, o.sampledRows, Object.entries(o.est).slice(0, Number(args[0] || 70)).map(([k, v]) => `${k}:${Math.round(v / 1000)}k`).join(' '));
+}

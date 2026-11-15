@@ -24,7 +24,7 @@ function mockRes() {
 async function post(mcp, body) { const res = mockRes(); await mcp.handler(mockReq(body), res); return res; }
 
 test('every tool has a title and all three hints ChatGPT requires, all read-only', () => {
-  assert.equal(TOOLS.length, 2);
+  assert.equal(TOOLS.length, 3);
   for (const t of TOOLS) {
     assert.ok(t.title && t.description && t.inputSchema, t.name);
     for (const k of ['readOnlyHint', 'destructiveHint', 'openWorldHint', 'idempotentHint']) assert.equal(typeof t.annotations[k], 'boolean', `${t.name} ${k}`);
@@ -68,7 +68,7 @@ test('GET is refused (stateless, no stream); OPTIONS answers CORS', async () => 
 test('tools/list then search_companies returns structured results with ids', async () => {
   const mcp = createMcp({ fetchFn: fakeFetch({ 'filter%5Bfulltext%5D=siemens': json(200, { data: [gl('W38RGI023J3WT1HWRP32', 'Siemens Aktiengesellschaft', 'DE')] }) }), env: {}, now: () => NOW });
   let res = await post(mcp, { jsonrpc: '2.0', id: 1, method: 'tools/list' });
-  assert.deepEqual(res.body.result.tools.map((t) => t.name), ['search_companies', 'get_company_card']);
+  assert.deepEqual(res.body.result.tools.map((t) => t.name), ['search_companies', 'get_company_card', 'get_presence_card']);
   res = await post(mcp, { jsonrpc: '2.0', id: 2, method: 'tools/call', params: { name: 'search_companies', arguments: { query: 'siemens' } } });
   const r = res.body.result;
   assert.equal(r.isError, undefined);

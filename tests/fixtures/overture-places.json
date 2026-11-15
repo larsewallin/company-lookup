@@ -1,0 +1,708 @@
+{
+ "note": "Real Overture Maps places, release 2026-10-21.0, read with lib/overture.js. Trimmed to the columns the card reads; sources[] keeps property, dataset, license, record_id, update_time and confidence. © Overture Maps Foundation; per-record licences in sources[].license.",
+ "records": [
+  {
+   "release": "2026-10-21.0",
+   "row": {
+    "id": "6f8bce4f-a274-4494-9f2c-dd051bca0bb4",
+    "confidence": 0.5,
+    "websites": [
+     "http://www.coleago.com/"
+    ],
+    "socials": null,
+    "phones": [
+     "447974356258"
+    ],
+    "brand": null,
+    "addresses": [
+     {
+      "freeform": "77 ABBOTSBURY ROAD",
+      "locality": "LONDON",
+      "postcode": "W14 8EP",
+      "region": "WSM",
+      "country": "GB"
+     }
+    ],
+    "names": {
+     "primary": "Coleago Consulting Ltd",
+     "common": null,
+     "rules": null
+    },
+    "sources": [
+     {
+      "property": "",
+      "dataset": "BrightQuery",
+      "license": "CDLA-Permissive-2.0",
+      "record_id": "33364471169",
+      "update_time": "2026-10-14T15:26:05.933Z",
+      "confidence": 0.5
+     },
+     {
+      "property": "/properties/operating_status",
+      "dataset": "BrightQuery",
+      "license": "CDLA-Permissive-2.0",
+      "record_id": "33364471169",
+      "update_time": "2026-10-14T15:26:05.933Z",
+      "confidence": null
+     },
+     {
+      "property": "/properties/confidence",
+      "dataset": "Overture",
+      "license": "CDLA-Permissive-2.0",
+      "record_id": null,
+      "update_time": "2026-10-15T18:00:21Z",
+      "confidence": null
+     }
+    ],
+    "basic_category": "professional_service",
+    "taxonomy": {
+     "primary": "business_consulting",
+     "hierarchy": [
+      "services_and_business",
+      "professional_service",
+      "business_consulting"
+     ],
+     "alternates": null
+    },
+    "version": 1,
+    "bbox": {
+     "xmin": -0.20729470252990723,
+     "xmax": -0.20729467272758484,
+     "ymin": 51.5025520324707,
+     "ymax": 51.502559661865234
+    }
+   }
+  },
+  {
+   "release": "2026-10-21.0",
+   "row": {
+    "id": "d3fdf60a-d8f4-44d1-999f-593665f0c81b",
+    "confidence": 0.8666562178730964,
+    "websites": [
+     "http://westkensingtonremovals.org.uk/"
+    ],
+    "socials": [
+     "https://www.facebook.com/426656581019149"
+    ],
+    "phones": [
+     "+442037443885"
+    ],
+    "brand": {
+     "wikidata": null,
+     "names": {
+      "primary": null,
+      "common": null,
+      "rules": null
+     }
+    },
+    "addresses": [
+     {
+      "freeform": "60 Abbotsbury Cl",
+      "locality": "London",
+      "postcode": "W14 8EQ",
+      "region": "ENG",
+      "country": "GB"
+     }
+    ],
+    "names": {
+     "primary": "West Kensington Removals",
+     "common": null,
+     "rules": null
+    },
+    "sources": [
+     {
+      "property": "",
+      "dataset": "meta",
+      "license": "CDLA-Permissive-2.0",
+      "record_id": "426656581019149",
+      "update_time": "2026-10-12T00:00:00.000Z",
+      "confidence": 0.420244425535202
+     },
+     {
+      "property": "/properties/confidence",
+      "dataset": "Overture",
+      "license": "CDLA-Permissive-2.0",
+      "record_id": null,
+      "update_time": "2026-10-15T18:00:21Z",
+      "confidence": null
+     }
+    ],
+    "basic_category": "storage_facility",
+    "taxonomy": {
+     "primary": "storage_facility",
+     "hierarchy": [
+      "services_and_business",
+      "storage_facility"
+     ],
+     "alternates": null
+    },
+    "version": 12,
+    "bbox": {
+     "xmin": -0.20721647143363953,
+     "xmax": -0.20721644163131714,
+     "ymin": 51.50246047973633,
+     "ymax": 51.50246810913086
+    }
+   }
+  },
+  {
+   "release": "2026-10-21.0",
+   "row": {
+    "id": "9581fb61-2d2c-4bb1-a94f-590fef09a5d5",
+    "confidence": 0.8,
+    "websites": null,
+    "socials": null,
+    "phones": null,
+    "brand": {
+     "wikidata": "Q113699692",
+     "names": {
+      "primary": "ubitricity",
+      "common": null,
+      "rules": []
+     }
+    },
+    "addresses": [
+     {
+      "freeform": "98 Old Church Street, SW3 6EP, London, GB",
+      "locality": null,
+      "postcode": "SW3 6EP",
+      "region": "England",
+      "country": "GB"
+     }
+    ],
+    "names": {
+     "primary": "ubitricity",
+     "common": null,
+     "rules": null
+    },
+    "sources": [
+     {
+      "property": "",
+      "dataset": "AllThePlaces",
+      "license": "CC0-1.0",
+      "record_id": "puO3H7lNfdcR408GTE3OvwJHyQY=",
+      "update_time": "2026-08-18T22:27:36.000Z",
+      "confidence": 0.8
+     },
+     {
+      "property": "/properties/confidence",
+      "dataset": "Overture",
+      "license": "CDLA-Permissive-2.0",
+      "record_id": null,
+      "update_time": "2026-10-15T18:00:21Z",
+      "confidence": null
+     }
+    ],
+    "basic_category": "ev_charging_station",
+    "taxonomy": {
+     "primary": "ev_charging_station",
+     "hierarchy": [
+      "travel_and_transportation",
+      "fueling_station",
+      "ev_charging_station"
+     ],
+     "alternates": null
+    },
+    "version": 1,
+    "bbox": {
+     "xmin": -0.17481960356235504,
+     "xmax": -0.17481957376003265,
+     "ymin": 51.48854064941406,
+     "ymax": 51.488548278808594
+    }
+   }
+  },
+  {
+   "release": "2026-10-21.0",
+   "row": {
+    "id": "180ff659-fbfa-44aa-bbac-38c359551b55",
+    "confidence": 0.9999475757874661,
+    "websites": [
+     "http://www.chelseaartsclub.com/"
+    ],
+    "socials": [
+     "https://www.facebook.com/145958772112341"
+    ],
+    "phones": [
+     "+442073763311"
+    ],
+    "brand": {
+     "wikidata": null,
+     "names": {
+      "primary": null,
+      "common": null,
+      "rules": null
+     }
+    },
+    "addresses": [
+     {
+      "freeform": "143 Old Church St",
+      "locality": "London",
+      "postcode": "SW3 6EB",
+      "region": "ENG",
+      "country": "GB"
+     }
+    ],
+    "names": {
+     "primary": "Chelsea Arts Club",
+     "common": null,
+     "rules": null
+    },
+    "sources": [
+     {
+      "property": "",
+      "dataset": "meta",
+      "license": "CDLA-Permissive-2.0",
+      "record_id": "145958772112341",
+      "update_time": "2026-10-12T00:00:00.000Z",
+      "confidence": 0.9859775304794312
+     },
+     {
+      "property": "/properties/operating_status",
+      "dataset": "BrightQuery",
+      "license": "CDLA-Permissive-2.0",
+      "record_id": "33599454970",
+      "update_time": "2026-10-14T15:26:05.933Z",
+      "confidence": null
+     },
+     {
+      "property": "/properties/confidence",
+      "dataset": "Overture",
+      "license": "CDLA-Permissive-2.0",
+      "record_id": null,
+      "update_time": "2026-10-15T18:00:21Z",
+      "confidence": null
+     }
+    ],
+    "basic_category": "corporate_or_business_office",
+    "taxonomy": {
+     "primary": "private_association",
+     "hierarchy": [
+      "services_and_business",
+      "corporate_or_business_office",
+      "private_association"
+     ],
+     "alternates": null
+    },
+    "version": 12,
+    "bbox": {
+     "xmin": -0.17452533543109894,
+     "xmax": -0.17452530562877655,
+     "ymin": 51.48794174194336,
+     "ymax": 51.48794937133789
+    }
+   }
+  },
+  {
+   "release": "2026-10-21.0",
+   "row": {
+    "id": "963a0e8a-3c19-4d6f-a039-7cb897f80cc1",
+    "confidence": 0.9772903919219971,
+    "websites": [
+     "https://3wacademy.fr/"
+    ],
+    "socials": [
+     "https://www.facebook.com/358711840893799"
+    ],
+    "phones": [
+     "+33176401159"
+    ],
+    "brand": {
+     "wikidata": null,
+     "names": {
+      "primary": null,
+      "common": null,
+      "rules": null
+     }
+    },
+    "addresses": [
+     {
+      "freeform": "214 Bd Raspail",
+      "locality": "Paris",
+      "postcode": "75014",
+      "region": null,
+      "country": "FR"
+     }
+    ],
+    "names": {
+     "primary": "3W Academy",
+     "common": null,
+     "rules": null
+    },
+    "sources": [
+     {
+      "property": "",
+      "dataset": "meta",
+      "license": "CDLA-Permissive-2.0",
+      "record_id": "358711840893799",
+      "update_time": "2026-10-12T00:00:00.000Z",
+      "confidence": 0.9772903919219971
+     },
+     {
+      "property": "/properties/confidence",
+      "dataset": "Overture",
+      "license": "CDLA-Permissive-2.0",
+      "record_id": null,
+      "update_time": "2026-10-15T18:00:21Z",
+      "confidence": null
+     }
+    ],
+    "basic_category": "specialty_school",
+    "taxonomy": {
+     "primary": "specialty_school",
+     "hierarchy": [
+      "education",
+      "place_of_learning",
+      "specialty_school"
+     ],
+     "alternates": null
+    },
+    "version": 5,
+    "bbox": {
+     "xmin": 2.329625129699707,
+     "xmax": 2.3296256065368652,
+     "ymin": 48.84082794189453,
+     "ymax": 48.84083557128906
+    }
+   }
+  },
+  {
+   "release": "2026-10-21.0",
+   "row": {
+    "id": "17ce9f0a-1fa2-4ce2-ac9c-d05778b2c0fc",
+    "confidence": 0.77,
+    "websites": [
+     "https://www.fillesdusud.net"
+    ],
+    "socials": null,
+    "phones": [
+     "09 63 58 30 01"
+    ],
+    "brand": null,
+    "addresses": [
+     {
+      "freeform": "15 rue Antonin Paris",
+      "locality": "Sommières",
+      "postcode": "30250",
+      "region": null,
+      "country": "FR"
+     }
+    ],
+    "names": {
+     "primary": "Filles du Sud",
+     "common": null,
+     "rules": null
+    },
+    "sources": [
+     {
+      "property": "",
+      "dataset": "Foursquare",
+      "license": "Apache-2.0",
+      "record_id": "5bf334ab92e7a9002c282ded",
+      "update_time": "2026-03-14T00:00:00.000",
+      "confidence": 0.77
+     },
+     {
+      "property": "/properties/confidence",
+      "dataset": "Overture",
+      "license": "CDLA-Permissive-2.0",
+      "record_id": null,
+      "update_time": "2026-10-15T18:00:21Z",
+      "confidence": null
+     }
+    ],
+    "basic_category": "market",
+    "taxonomy": null,
+    "version": 3,
+    "bbox": {
+     "xmin": 2.3000400066375732,
+     "xmax": 2.3000404834747314,
+     "ymin": 48.827877044677734,
+     "ymax": 48.827884674072266
+    }
+   }
+  },
+  {
+   "release": "2026-10-21.0",
+   "row": {
+    "id": "42c83ae3-b858-4172-9887-397c1f546deb",
+    "confidence": 0.77,
+    "websites": [
+     "https://www.westernunion.com/fr/fr/home.html"
+    ],
+    "socials": null,
+    "phones": [
+     "0 800 00 36 31"
+    ],
+    "brand": null,
+    "addresses": [
+     {
+      "freeform": "113 boulevard Lefebvre",
+      "locality": "Paris",
+      "postcode": "75015",
+      "region": "Paris",
+      "country": "FR"
+     }
+    ],
+    "names": {
+     "primary": "Western Union",
+     "common": null,
+     "rules": null
+    },
+    "sources": [
+     {
+      "property": "",
+      "dataset": "Foursquare",
+      "license": "Apache-2.0",
+      "record_id": "b68325f641ba45e3f8581337",
+      "update_time": "2026-04-11T00:00:00.000",
+      "confidence": 0.77
+     },
+     {
+      "property": "/properties/confidence",
+      "dataset": "Overture",
+      "license": "CDLA-Permissive-2.0",
+      "record_id": null,
+      "update_time": "2026-10-15T18:00:21Z",
+      "confidence": null
+     }
+    ],
+    "basic_category": "financial_service",
+    "taxonomy": {
+     "primary": "financial_service",
+     "hierarchy": [
+      "services_and_business",
+      "financial_service"
+     ],
+     "alternates": null
+    },
+    "version": 5,
+    "bbox": {
+     "xmin": 2.297642946243286,
+     "xmax": 2.2976431846618652,
+     "ymin": 48.829734802246094,
+     "ymax": 48.829742431640625
+    }
+   }
+  },
+  {
+   "release": "2026-10-21.0",
+   "row": {
+    "id": "2d901732-58a9-496a-888c-db172707bb75",
+    "confidence": 0.5,
+    "websites": [
+     "https://www.mcsebastianalvaro.es/"
+    ],
+    "socials": null,
+    "phones": [
+     "34917115199"
+    ],
+    "brand": null,
+    "addresses": [
+     {
+      "freeform": "Avenida Del Padre Piquer 43",
+      "locality": "Madrid",
+      "postcode": "28024",
+      "region": "Madrid",
+      "country": "ES"
+     }
+    ],
+    "names": {
+     "primary": "Materiales De Construcción Sebastián Alvaro S.l.",
+     "common": null,
+     "rules": null
+    },
+    "sources": [
+     {
+      "property": "",
+      "dataset": "BrightQuery",
+      "license": "CDLA-Permissive-2.0",
+      "record_id": "33758908891",
+      "update_time": "2026-10-14T15:26:05.933Z",
+      "confidence": 0.5
+     },
+     {
+      "property": "/properties/operating_status",
+      "dataset": "BrightQuery",
+      "license": "CDLA-Permissive-2.0",
+      "record_id": "33758908891",
+      "update_time": "2026-10-14T15:26:05.933Z",
+      "confidence": null
+     },
+     {
+      "property": "/properties/confidence",
+      "dataset": "Overture",
+      "license": "CDLA-Permissive-2.0",
+      "record_id": null,
+      "update_time": "2026-10-15T18:00:21Z",
+      "confidence": null
+     }
+    ],
+    "basic_category": "hardware_home_and_garden_store",
+    "taxonomy": {
+     "primary": "building_supply_store",
+     "hierarchy": [
+      "shopping",
+      "specialty_store",
+      "hardware_home_and_garden_store",
+      "building_supply_store"
+     ],
+     "alternates": null
+    },
+    "version": 1,
+    "bbox": {
+     "xmin": -3.7659213542938232,
+     "xmax": -3.765920877456665,
+     "ymin": 40.38978958129883,
+     "ymax": 40.389793395996094
+    }
+   }
+  },
+  {
+   "release": "2026-10-21.0",
+   "row": {
+    "id": "edc9a0e9-948b-4cf9-9c85-12056611bac0",
+    "confidence": 0.5355393886566162,
+    "websites": [
+     "https://tataabadi.com/"
+    ],
+    "socials": [
+     "https://www.facebook.com/140843269112730"
+    ],
+    "phones": [
+     "+6282118988881"
+    ],
+    "brand": {
+     "wikidata": null,
+     "names": {
+      "primary": null,
+      "common": null,
+      "rules": null
+     }
+    },
+    "addresses": [
+     {
+      "freeform": "Jalan Haji Saaba 2",
+      "locality": "Jakarta Barat",
+      "postcode": "11650",
+      "region": null,
+      "country": "ID"
+     }
+    ],
+    "names": {
+     "primary": "Tata Abadi Billboard",
+     "common": null,
+     "rules": null
+    },
+    "sources": [
+     {
+      "property": "",
+      "dataset": "meta",
+      "license": "CDLA-Permissive-2.0",
+      "record_id": "140843269112730",
+      "update_time": "2026-08-24T00:00:00.000Z",
+      "confidence": 0.5355393886566162
+     },
+     {
+      "property": "/properties/confidence",
+      "dataset": "Overture",
+      "license": "CDLA-Permissive-2.0",
+      "record_id": null,
+      "update_time": "2026-10-15T18:00:21Z",
+      "confidence": null
+     }
+    ],
+    "basic_category": "professional_service",
+    "taxonomy": {
+     "primary": "advertising_agency",
+     "hierarchy": [
+      "services_and_business",
+      "professional_service",
+      "advertising_agency"
+     ],
+     "alternates": null
+    },
+    "version": 2,
+    "bbox": {
+     "xmin": 106.72268676757812,
+     "xmax": 106.72270202636719,
+     "ymin": -6.2158308029174805,
+     "ymax": -6.215829849243164
+    }
+   }
+  },
+  {
+   "release": "2026-10-21.0",
+   "row": {
+    "id": "417e1ba4-6da2-4609-a793-953942dfa44d",
+    "confidence": 0.5557717084884644,
+    "websites": [
+     "https://www.instagram.com/sonyantoni_?igsh=MXFoMzMxNTR3bXJubQ%3D%3D"
+    ],
+    "socials": [
+     "https://www.facebook.com/1851566218446532"
+    ],
+    "phones": [
+     "+6289677534826"
+    ],
+    "brand": {
+     "wikidata": null,
+     "names": {
+      "primary": null,
+      "common": null,
+      "rules": null
+     }
+    },
+    "addresses": [
+     {
+      "freeform": "RT.5/RW.6",
+      "locality": "Jakarta Barat",
+      "postcode": "11640",
+      "region": null,
+      "country": "ID"
+     }
+    ],
+    "names": {
+     "primary": "Bison Motor",
+     "common": null,
+     "rules": null
+    },
+    "sources": [
+     {
+      "property": "",
+      "dataset": "meta",
+      "license": "CDLA-Permissive-2.0",
+      "record_id": "1851566218446532",
+      "update_time": "2026-10-12T00:00:00.000Z",
+      "confidence": 0.5557717084884644
+     },
+     {
+      "property": "/properties/confidence",
+      "dataset": "Overture",
+      "license": "CDLA-Permissive-2.0",
+      "record_id": null,
+      "update_time": "2026-10-15T18:00:21Z",
+      "confidence": null
+     }
+    ],
+    "basic_category": "vehicle_dealer",
+    "taxonomy": {
+     "primary": "motorcycle_dealer",
+     "hierarchy": [
+      "shopping",
+      "vehicle_dealer",
+      "motorcycle_dealer"
+     ],
+     "alternates": null
+    },
+    "version": 10,
+    "bbox": {
+     "xmin": 106.72176361083984,
+     "xmax": 106.7217788696289,
+     "ymin": -6.21628999710083,
+     "ymax": -6.216289043426514
+    }
+   }
+  }
+ ]
+}

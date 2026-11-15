@@ -38,6 +38,9 @@
     },
     "api/mcp.js": {
       "maxDuration": 60
+    },
+    "api/presence.js": {
+      "maxDuration": 30
     }
   },
   "crons": [
