@@ -21,3 +21,28 @@ if (mode === 'rows') {
   const out = JSON.parse(fs.readFileSync('/vercel/probe/rows.json', 'utf8'));
   console.log(JSON.stringify(out[Number(args[0])]));
 }
+if (mode === 'find') {
+  // find <lon> <lat> <field-regex-json>: rows near a point whose brand or source dataset matches
+  const { asyncBufferFromUrl, parquetMetadataAsync, parquetReadObjects } = await import('hyparquet');
+  const zlib = await import('node:zlib');
+  const compressors = { ZSTD: (i) => new Uint8Array(zlib.zstdDecompressSync(i)) };
+  const ov = createOverture();
+  const R = await ov.latestRelease();
+  const x = Number(args[0]); const y = Number(args[1]); const want = args[2];
+  const it = (await ov.items(R)).find((i) => i.bbox[0] <= x && i.bbox[2] >= x && i.bbox[1] <= y && i.bbox[3] >= y);
+  const file = await asyncBufferFromUrl({ url: it.url });
+  const md = await parquetMetadataAsync(file);
+  let start = 0; let n = 0;
+  for (const rg of md.row_groups) {
+    const cnt = Number(rg.num_rows);
+    const st = (p) => rg.columns.find((c) => c.meta_data.path_in_schema.join('.') === p).meta_data.statistics;
+    if (st('bbox.xmin').min_value <= x + 0.02 && st('bbox.xmax').max_value >= x - 0.02 && st('bbox.ymin').min_value <= y + 0.02 && st('bbox.ymax').max_value >= y - 0.02 && n < 3) {
+      n++;
+      const rows = await parquetReadObjects({ file, metadata: md, compressors, rowStart: start, rowEnd: start + cnt, columns: ['id', 'names', 'websites', 'brand', 'bbox', 'sources'] });
+      for (const r of rows.filter((r) => (want === 'brand' ? r.brand && r.brand.names : r.sources.some((s) => new RegExp(want, 'i').test(s.dataset)))).slice(0, 4)) {
+        console.log(r.id, r.names && r.names.primary, (r.websites || [])[0], r.brand && r.brand.names && r.brand.names.primary, r.bbox.xmin.toFixed(5), r.bbox.ymin.toFixed(5), [...new Set(r.sources.map((s) => s.dataset + '/' + s.license))].join('+'));
+      }
+    }
+    start += cnt;
+  }
+}
