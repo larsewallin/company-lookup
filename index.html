@@ -190,7 +190,7 @@
       out.appendChild(h('ul', { class: 'results' }, res.map(function (c) {
         return h('li', null, h('button', { type: 'button', onclick: function () { company(c.id, wEl.value.trim()); } },
           c.name,
-          h('span', { class: 'sub' }, [c.city, cname(c.country), c.number ? 'no. ' + c.number : null, c.status, c.incorporated ? 'inc. ' + c.incorporated : null].filter(Boolean).join(' · ')),
+          h('span', { class: 'sub' }, [c.kind === 'fund' ? 'Fund' : null, c.city, cname(c.country), c.number ? 'no. ' + c.number : null, c.status, c.incorporated ? 'inc. ' + c.incorporated : null].filter(Boolean).join(' · ')),
           h('span', { class: 'sub' }, (c.ticker ? 'Ticker ' + c.ticker + ' · ' : '') + (c.isin ? 'Issuer of ISIN ' + c.isin + ' · ' : '') + 'Source: ' + c.source + (c.lei ? ' · LEI ' + c.lei : ''))));
       })));
     }).catch(function () { msg('Search failed. Check your connection and try again.', true); });
@@ -308,7 +308,7 @@
       card.appendChild(h('h3', null, 'People'));
       card.appendChild(h('dl', null,
         row('Officers', c.people.officers ? (list(c.people.officers.map(function (o) { return o.name + (o.role ? ', ' + o.role : '') + (o.appointed ? ' since ' + o.appointed : ''); })) || 'None listed') : null),
-        c.people.owners === null ? null : row('Owners (significant control)', c.people.owners ? (list(c.people.owners.map(function (o) { return o.name + (o.control.length ? ': ' + o.control.join(', ') : ''); })) || 'None listed') : null)
+        c.people.owners === null ? null : row('Owners (significant control)', c.people.owners ? (list(c.people.owners.map(function (o) { return o.name + (o.control.length ? ': ' + o.control.join(', ') : ''); })) || c.people.owners_note || 'None listed') : null)
       ));
     }
 
