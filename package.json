@@ -1,15 +1,31 @@
 {
   "name": "company-lookup",
   "version": "1.0.0",
-  "description": "Check whether a company is real and in good standing, from official company registers worldwide, GLEIF, EU VAT and domain records. No dependencies.",
+  "description": "Check whether a company is real and in good standing, from official company registers worldwide, GLEIF, EU VAT and domain records, plus Overture Maps presence data.",
   "license": "MIT",
   "author": "Lars E. Wallin (Latiluco, LLC)",
-  "repository": { "type": "git", "url": "https://github.com/larsewallin/company-lookup.git" },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/larsewallin/company-lookup.git"
+  },
   "main": "lib/index.js",
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "start": "node server.js",
-    "test": "node --test tests/lookup.test.js tests/bulk.test.js tests/mcp.test.js"
+    "test": "node --test tests/lookup.test.js tests/bulk.test.js tests/mcp.test.js tests/presence.test.js"
   },
-  "keywords": ["company", "business register", "kyb", "lei", "gleif", "trade credit", "mcp"]
+  "keywords": [
+    "company",
+    "business register",
+    "kyb",
+    "lei",
+    "gleif",
+    "trade credit",
+    "mcp"
+  ],
+  "dependencies": {
+    "hyparquet": "1.33.0"
+  }
 }

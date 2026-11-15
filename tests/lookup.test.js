@@ -225,7 +225,7 @@ test('search: GLEIF works with no Companies House key, passes the country filter
   const { search } = createHandlers({ fetchFn: fakeFetch({ 'filter%5Bfulltext%5D=siemens': json(200, { data: [gl('W38RGI023J3WT1HWRP32', 'Siemens Aktiengesellschaft', 'DE', { registeredAs: 'HRB 6684' })] }) }, calls), env: {}, now: () => NOW });
   const res = mockRes(); await search(req({ q: 'siemens', country: 'de' }), res);
   assert.equal(res.statusCode, 200);
-  assert.deepEqual(res.body.results[0], { id: 'lei:W38RGI023J3WT1HWRP32', source: 'GLEIF', name: 'Siemens Aktiengesellschaft', country: 'DE', city: 'X', status: 'active', number: 'HRB 6684', lei: 'W38RGI023J3WT1HWRP32' });
+  assert.deepEqual(res.body.results[0], { id: 'lei:W38RGI023J3WT1HWRP32', source: 'GLEIF', name: 'Siemens Aktiengesellschaft', country: 'DE', city: 'X', status: 'active', number: 'HRB 6684', lei: 'W38RGI023J3WT1HWRP32', tier: 'gleif' });
   assert.ok(calls[0].url.includes('filter%5Bentity.legalAddress.country%5D=DE'));
   assert.ok(!calls.some((c) => c.url.includes('company-information')));
 });
@@ -380,7 +380,7 @@ async function natLookup(id, routes, env = {}) {
 test('France: search maps SIREN results; card shows officers, VAT number, no birth dates', async () => {
   const { search } = createHandlers({ fetchFn: fakeFetch({ 'recherche-entreprises': json(200, { results: [FR_MICHELIN] }), 'api.gleif.org': json(200, { data: [] }) }), env: {}, now: () => NOW });
   let res = mockRes(); await search(req({ q: 'michelin', country: 'FR' }), res);
-  assert.deepEqual(res.body.results[0], { id: 'fr:424622884', source: 'French business register', name: 'MICHELIN', country: 'FR', city: 'GRUFFY', status: 'active', number: '424622884', incorporated: '1999-08-27' });
+  assert.deepEqual(res.body.results[0], { id: 'fr:424622884', source: 'French business register', name: 'MICHELIN', country: 'FR', city: 'GRUFFY', status: 'active', number: '424622884', incorporated: '1999-08-27', tier: 'register' });
   res = await natLookup('fr:424 622 884', { 'recherche-entreprises': json(200, { results: [{ ...FR_MICHELIN, finances: { 2023: { ca: 1000, resultat_net: 10 }, 2024: { ca: 1200, resultat_net: -5 } } }] }) });
   assert.equal(res.statusCode, 200);
   assert.equal(res.body.identity.register.number, '424622884');

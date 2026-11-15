@@ -19,6 +19,8 @@ const ROUTES = {
   '/api/company': () => require('./api/company'),
   '/api/coverage': () => require('./api/coverage'),
   '/api/mcp': () => require('./api/mcp'),
+  '/api/presence': () => require('./api/presence'),
+  '/api/presence-report': () => require('./api/presence-report'),
   '/api/bulk-import': () => require('./api/bulk-import'),
 };
 
