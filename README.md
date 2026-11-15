@@ -93,7 +93,7 @@ Every setting is optional. Put them in `.env` (read by `server.js`) or in your h
 | `COMPANY_LOOKUP_USER_AGENT` | Identifies your app to the registers. **Set it** to your app name and a contact e-mail, e.g. `Acme credit-tools (credit@acme.com)`. SEC EDGAR requires a contact. |
 | `COMPANIES_HOUSE_API_KEY` | UK lookups: officers, owners, filings, secured lending and insolvency history. Free; see [Getting a Companies House key](#getting-a-companies-house-key). Without it, UK companies are found only through GLEIF. |
 | `DATA_GOV_SG_API_KEY` | Optional higher rate limits for Singapore. |
-| `BLOB_READ_WRITE_TOKEN` | Your Vercel Blob store, for the hosted-index countries. |
+| `BLOB_STORE_ID` or `BLOB_READ_WRITE_TOKEN` | Your Vercel Blob store, for the hosted-index countries. On Vercel, connecting the store sets `BLOB_STORE_ID` and the code signs in with Vercel's short-lived OIDC token. Outside Vercel (e.g. `node server.js`), use a read-write token. |
 | `SEC_USER_AGENT` | Overrides the User-Agent for SEC EDGAR only. |
 
 ### Getting a Companies House key
@@ -111,7 +111,7 @@ The key is free and works straight away.
 
 Fifteen registers publish only bulk files (Argentina, Canada, Chile, Cyprus, the Dominican Republic, Ecuador, India, Luxembourg, Moldova, Paraguay, Peru, Romania, Russia, Slovenia and Ukraine). For these, an import job downloads the files and builds a small search index in **your own** Vercel Blob store:
 
-1. Create a Blob store in Vercel (Storage → Blob, public access) and copy its `BLOB_READ_WRITE_TOKEN`.
+1. Create a Blob store in Vercel (Storage → Blob, **public** access) and connect it to your project. Running outside Vercel, also create a read-write token and set it as `BLOB_READ_WRITE_TOKEN`.
 2. Call the import once per country, e.g. `curl "http://localhost:3000/api/bulk-import?country=CY"`. It answers `{"ok": true, ...}` when the index is built. Small registers take a minute or two; the largest (Romania, Peru, Ukraine) take up to about 13 minutes, reading their files in several passes. Calls within 20 days of a successful build are skipped.
 3. On Vercel, the `crons` in `vercel.json` refresh each country monthly. Romania runs from the Frankfurt endpoint `/api/bulk-import-eu`, because its portal refuses US servers.
 

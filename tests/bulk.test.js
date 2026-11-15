@@ -738,3 +738,26 @@ test('Luxembourg bulk: deposits streamed from the JSON array; latest year per RC
   assert.equal(card.situations[0].label, 'Negative equity');
   assert.deepEqual(card.financials, { year: '2023', revenue: null, net_result: 46909, currency: 'EUR' });
 });
+
+test('Blob: OIDC connection (BLOB_STORE_ID) works like a read-write token', async () => {
+  const blob = require('../lib/blob');
+  const rw = 'vercel_blob_rw_AbC123xyz_secretpart';
+  assert.equal(blob.storeBase({ BLOB_READ_WRITE_TOKEN: rw }), 'https://abc123xyz.public.blob.vercel-storage.com');
+  assert.equal(blob.storeBase({ BLOB_STORE_ID: 'store_AbC123xyz' }), 'https://abc123xyz.public.blob.vercel-storage.com', 'same store, same base');
+  assert.equal(blob.storeBase({}), null);
+  // Token wins when both are present; OIDC needs both a store id and a token.
+  assert.equal(blob.auth({ BLOB_READ_WRITE_TOKEN: rw, BLOB_STORE_ID: 'store_x' }).oidc, false);
+  assert.equal(blob.auth({ BLOB_STORE_ID: 'store_AbC123xyz' }), null);
+  const a = blob.auth({ BLOB_STORE_ID: 'store_AbC123xyz' }, { headers: { 'x-vercel-oidc-token': ' oidc.jwt ' } });
+  assert.deepEqual(a, { token: 'oidc.jwt', storeId: 'AbC123xyz', oidc: true });
+  // Requests carry the store id header only for OIDC, as @vercel/blob does.
+  let seen = null;
+  await blob.list(async (url, init) => { seen = init.headers; return { ok: true, json: async () => ({ blobs: [], hasMore: false }) }; }, a, 'bulk/cy/');
+  assert.equal(seen.authorization, 'Bearer oidc.jwt');
+  assert.equal(seen['x-vercel-blob-store-id'], 'AbC123xyz');
+  await blob.list(async (url, init) => { seen = init.headers; return { ok: true, json: async () => ({ blobs: [], hasMore: false }) }; }, rw, 'bulk/cy/');
+  assert.equal(seen['x-vercel-blob-store-id'], undefined);
+  // A register connected by OIDC reads the same public index.
+  const cyReg = require('../lib/registers/cy').make({ BLOB_STORE_ID: 'store_AbC123xyz' });
+  assert.ok(cyReg, 'register builds from BLOB_STORE_ID');
+});

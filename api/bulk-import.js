@@ -532,8 +532,8 @@ async function upload(gen, n, fn) {
 function createImport({ fetchFn = fetch, blobFetch = blob.http1Fetch, env = process.env, now = () => Date.now() } = {}) {
   return async function handler(req, res) {
     const send = (code, body) => { res.statusCode = code; res.setHeader('Content-Type', 'application/json'); res.setHeader('Cache-Control', 'no-store'); res.end(JSON.stringify(body)); };
-    const token = env.BLOB_READ_WRITE_TOKEN;
-    if (!token) return send(503, { error: 'Blob storage is not connected.' });
+    const token = blob.auth(env, req);
+    if (!token) return send(503, { error: 'Blob storage is not connected (set BLOB_READ_WRITE_TOKEN, or connect the store so Vercel sets BLOB_STORE_ID).' });
     const cc = String((req.query && req.query.country) || '').toUpperCase();
     if (req.query && req.query.peek && (FILES[cc] || CKAN[cc] || SEARCH[cc])) return send(200, { peek: await peekSafe(fetchFn, cc, { entry: req.query.entry ? String(req.query.entry) : null, bytes: req.query.bytes, skip: req.query.skip ? String(req.query.skip) : null, max: req.query.max, enc: req.query.enc ? String(req.query.enc) : null, links: !!req.query.links, whole: !!req.query.whole, scan: !!req.query.scan }) });
     if (!IMPORTERS[cc]) return send(404, { error: 'Unknown country.' });
@@ -556,7 +556,7 @@ function createImport({ fetchFn = fetch, blobFetch = blob.http1Fetch, env = proc
       const got = await IMPORTERS[cc](fetchFn, { asOfIso: new Date(t).toISOString().slice(0, 10) });
       const { source } = got;
       const version = new Date(t).toISOString().replace(/[-:T]/g, '').slice(0, 12);
-      const base = `${blob.publicBase(token)}/${prefix}${version}`;
+      const base = `${blob.publicBase(token.storeId)}/${prefix}${version}`;
       const put = ([path, text]) => blob.put(blobFetch, token, `${prefix}${version}/${path}`, text);
       const prev = cur;
       // Refuse to replace a good index with a much smaller one (a broken or partial download).
