@@ -1,6 +1,6 @@
 # Hosted-index countries
 
-Some registers publish only downloadable files, with no search API. To search them, the files are turned into a small search index in your **Vercel Blob** store (`BLOB_READ_WRITE_TOKEN`). The countries are listed in [COUNTRIES.md](../../COUNTRIES.md).
+Some registers publish only downloadable files, with no search API. To search them, the files are turned into a small search index in your **Vercel Blob** store (connected to the project: Vercel sets `BLOB_STORE_ID`, or use a `BLOB_READ_WRITE_TOKEN`). The countries are listed in [COUNTRIES.md](../../COUNTRIES.md).
 
 ## How it works
 1. **Vercel Cron** (or you, with `curl`) calls `/api/bulk-import?country=CY`. The job runs only if the index is missing, more than 20 days old or built with an older layout, and no other run holds the lock. Extra calls do nothing.
