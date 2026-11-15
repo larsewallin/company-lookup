@@ -9,7 +9,7 @@ Built for credit, finance, procurement and compliance teams who need to know whe
 - **35 national registers** in [COUNTRIES.md](COUNTRIES.md), plus every company worldwide that holds an LEI.
 - **No dependencies.** Plain Node.js 20+, no database required.
 - **Three ways to use it:** as a library in your own app, as an HTTP API, or as an MCP server for Claude, ChatGPT and other AI assistants.
-- **Try it:** [larsewallin.com/lookup](https://larsewallin.com/lookup)
+- **Try it:** [company-lookup.vercel.app](https://company-lookup.vercel.app), or add `https://company-lookup.vercel.app/api/mcp` to Claude or ChatGPT as a connector.
 
 > For information only. Company Lookup is not advice, a credit rating or a credit report, and must not be used for decisions about individuals. Flags are prompts to check, not findings. Data comes from third-party sources that can be incomplete or out of date: confirm anything important at the source.
 
@@ -56,7 +56,7 @@ Country codes are ISO 3166-1 alpha-2. Giving a country adds that country's natio
 
 ### As an MCP server for AI assistants
 
-`/api/mcp` is a remote MCP server (Streamable HTTP, no sign-in) with two read-only tools: `search_companies` and `get_company_card`. Add its URL as a custom connector in Claude or ChatGPT, or in any MCP client. A hosted copy runs at `https://larsewallin.com/api/mcp`.
+`/api/mcp` is a remote MCP server (Streamable HTTP, no sign-in) with two read-only tools: `search_companies` and `get_company_card`. Add its URL as a custom connector in Claude or ChatGPT, or in any MCP client. A hosted copy runs at `https://company-lookup.vercel.app/api/mcp`.
 
 ## The company card
 
@@ -142,6 +142,10 @@ Run the tests with `npm test`. They are offline and need no network.
 Company Lookup only reads public sources, and each card names the source of every fact. When you reuse the data, follow each publisher's terms. Among them: GLEIF and Wikidata (CC0), UK Companies House (Open Government Licence v3.0), Finland PRH (CC BY 4.0), Norway Brønnøysund (NLOD), Taiwan GCIS (Open Government Data License 1.0), Cyprus (CC BY 4.0) and India Data Portal (ODC-By). The EU VAT check (VIES) is meant for checking your own trading partners. Respect each source's rate limits; the HTTP API has a per-address limit built in.
 
 Officers' names are shown only where a register publishes them. Birth dates, personal e-mail addresses and private individuals' records are left out. Do not use the tool to profile people.
+
+## Your own deployment
+
+`privacy.html`, `terms.html` and `connector.html` describe the hosted instance at company-lookup.vercel.app, run by Latiluco, LLC. If you deploy your own copy, replace or remove them: they are not terms for your service.
 
 ## Contributing
 

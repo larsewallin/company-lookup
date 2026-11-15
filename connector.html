@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Company Lookup connector for Claude and ChatGPT</title>
+<meta name="description" content="Connect Company Lookup to Claude or ChatGPT: check any company against official registers, GLEIF, EU VAT and domain records, with every fact sourced and dated.">
+<meta property="og:title" content="Company Lookup connector">
+<meta property="og:description" content="Check whether a company is real and in good standing, from inside Claude or ChatGPT.">
+<meta property="og:url" content="https://company-lookup.vercel.app/connector">
+<link rel="icon" href="/company-lookup-icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/doc.css">
+</head>
+<body>
+<main>
+  <p class="crumb"><a href="/">Company Lookup</a> / Connector</p>
+  <h1>Company Lookup connector</h1>
+  <p class="muted">For Claude, ChatGPT and other AI assistants that support remote MCP servers. Free, no sign-in.</p>
+
+  <p>Company Lookup checks whether a business is real and in good standing. Ask your assistant about a customer, supplier or prospect and it looks the company up in official company registers, the global LEI register (GLEIF), the EU VAT check, Wikidata and domain records. It then gives you one company card: legal name, status, address, incorporation date, officers where the register publishes them, parent companies, VAT validity, website age and warning flags. Every fact shows its source and the date it was checked.</p>
+  <p>It is the same lookup as the <a href="/">Company Lookup page</a>, inside your assistant. It is free and published for information and to show what can be built for trade credit; it is not a commercial service. Operated by Latiluco, LLC.</p>
+
+  <h2 id="connect">Connect it</h2>
+  <p>Server address:</p>
+  <pre><code>https://company-lookup.vercel.app/api/mcp</code></pre>
+  <h3>Claude</h3>
+  <ol>
+    <li>Open <strong>Settings → Connectors</strong> and choose <strong>Add custom connector</strong>. (Once the directory listing is live, you can add it from the directory instead.)</li>
+    <li>Name it Company Lookup and paste the server address above. No sign-in is needed.</li>
+    <li>In a chat, ask something like "Look up Siemens AG". Claude may ask to allow the tool the first time.</li>
+  </ol>
+  <p>Custom connectors need a paid Claude plan. On Team and Enterprise plans an Owner may need to add it first.</p>
+  <h3>ChatGPT</h3>
+  <p>Add a new app or connector in ChatGPT's settings with the server address above and no authentication. Where your plan needs it, turn on developer mode first.</p>
+  <h3>Other assistants</h3>
+  <p>Any client that supports remote MCP servers over Streamable HTTP can connect to the same address with no authentication.</p>
+
+  <h2 id="tools">Tools</h2>
+  <p>Both tools only read public data. They change nothing and need no account.</p>
+  <table>
+    <tr><th>Tool</th><th>What it does</th></tr>
+    <tr><td><code>search_companies</code></td><td>Finds companies by name, registration number, LEI, ISIN or stock ticker. Adding a two-letter country code (for example GB, FR, US) also searches that country's national register. Returns up to 20 matches, each with an id.</td></tr>
+    <tr><td><code>get_company_card</code></td><td>Returns the full company card for one id from the search. You can add the company's website to check how old its domain is.</td></tr>
+  </table>
+
+  <h2 id="examples">Things to ask</h2>
+  <ul>
+    <li>"Look up Tesco PLC in the UK. Is it active and are its accounts up to date?"</li>
+    <li>"Who is the ultimate parent of LEI 5493001KJTIIGC8Y1R12?"</li>
+    <li>"A new customer says it's Acme Trading SAS, website acme-trading.fr. Does that check out?"</li>
+    <li>"Check these three suppliers and tell me which ones need a closer look."</li>
+  </ul>
+
+  <h2 id="flags">Reading the card</h2>
+  <ul>
+    <li><strong>Stop:</strong> something serious on the record, such as dissolved, struck off, insolvent or in liquidation.</li>
+    <li><strong>Check:</strong> worth a closer look, such as overdue filings, a very young company, a recently created website domain or a parent company that is not active.</li>
+    <li><strong>Note:</strong> useful context, such as a parent company that is not disclosed.</li>
+  </ul>
+  <p>Flags come from fixed, written rules applied to the source data. They are prompts to review, never a verdict that a company is fraudulent or should be declined.</p>
+
+  <h2 id="coverage">Coverage</h2>
+  <p>GLEIF covers about 3.5 million legal entities worldwide, mostly larger and regulated companies. National registers add tens of millions more in over 30 countries, including the UK, France, Norway, Finland, Ireland, Australia, Canada, Colombia, India, Romania, Ukraine and six US states plus SEC EDGAR. The <a href="/">lookup page</a> shows the current list and a live count.</p>
+  <p>Some major countries have no free official register, for example Germany, Italy and Spain. Their companies are found only when they hold an LEI.</p>
+
+  <h2 id="limits">Limits</h2>
+  <ul>
+    <li>Not advice, a credit rating or a credit report, and not for decisions about individuals. See the <a href="/terms">terms of use</a>.</li>
+    <li>Data is only as current as each source. Confirm anything important at the source shown on the card.</li>
+    <li>A source can be down; the card then says which check could not be done.</li>
+    <li>To protect the public registers, lookups are rate-limited. If you hit the limit, wait a few minutes.</li>
+  </ul>
+
+  <h2 id="sources">Sources and licences</h2>
+  <p>All data comes from public sources, queried live or from their official open-data files. Each card names the source of every fact.</p>
+  <table>
+    <tr><th>Source</th><th>Licence or terms</th></tr>
+    <tr><td>GLEIF (global LEI register)</td><td>CC0</td></tr>
+    <tr><td>Wikidata</td><td>CC0</td></tr>
+    <tr><td>UK Companies House</td><td>Contains public sector information licensed under the Open Government Licence v3.0</td></tr>
+    <tr><td>Finland, PRH</td><td>© PRH, CC BY 4.0</td></tr>
+    <tr><td>Norway, Brønnøysund Register Centre</td><td>NLOD</td></tr>
+    <tr><td>Taiwan, MOEA GCIS</td><td>Open Government Data License, version 1.0</td></tr>
+    <tr><td>Cyprus, Registrar of Companies (data.gov.cy)</td><td>CC BY 4.0</td></tr>
+    <tr><td>India, MCA registrations (India Data Portal)</td><td>ODC-By</td></tr>
+    <tr><td>Estonia, e-Business Register (RIK)</td><td>RIK open data terms</td></tr>
+    <tr><td>France (INSEE SIRENE, RNE), Czechia (ARES), Slovakia (RPO), Latvia (UR), Poland (KRS), Switzerland (Zefix/LINDAS), Ireland (CRO), Israel, Singapore (ACRA), Hong Kong (Companies Registry), Australia (ASIC), New Caledonia (RIDET), Slovenia (AJPES), Romania (ONRC), Luxembourg (LBR/STATEC), Moldova (ASP), Ukraine, Russia (FNS open data), Canada (Corporations Canada, Quebec Registraire), Argentina, Chile, Colombia (RUES), Peru (SUNAT), Dominican Republic (DGII), Ecuador (SRI), Paraguay (DNIT), Brazil (Receita Federal CNPJ via BrasilAPI), US (SEC EDGAR; New York, Colorado, Connecticut, Texas, Oregon and Pennsylvania state data)</td><td>Official open data or public registers, under each publisher's own terms</td></tr>
+    <tr><td>EU VAT check (VIES), European Commission</td><td>Used to check a company's VAT number, under the VIES terms</td></tr>
+    <tr><td>Domain records (RDAP)</td><td>Public registry data</td></tr>
+  </table>
+
+  <h2 id="privacy">Privacy</h2>
+  <p>No accounts, cookies or analytics, and no search history is kept. The connector receives only what the assistant puts in the tool call, never your conversation or files. Details are in the <a href="/privacy">privacy policy</a>. Use is covered by the <a href="/terms">terms of use</a>.</p>
+
+  <h2 id="support">Support</h2>
+  <p>Questions, wrong data or a source you would like added: <a href="mailto:lars.e.wallin@gmail.com">lars.e.wallin@gmail.com</a>. The code is open source at <a href="https://github.com/larsewallin/company-lookup">github.com/larsewallin/company-lookup</a>.</p>
+
+  <footer><a href="/">Company Lookup</a> · <a href="/privacy">Privacy policy</a> · <a href="/terms">Terms of use</a> · © 2026 Latiluco, LLC</footer>
+</main>
+</body>
+</html>

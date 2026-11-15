@@ -1,4 +1,4 @@
-name: Test and deploy
+name: Test
 
 on:
   push:
@@ -14,18 +14,3 @@ jobs:
         with:
           node-version: 20
       - run: npm test
-
-  # After tests pass on main, rebuild larsewallin.com so it picks up the new version.
-  # Needs the repository secret VERCEL_DEPLOY_HOOK (a Vercel deploy hook URL). Skipped when it is not set,
-  # so forks and other users of this repo are not affected.
-  deploy-website:
-    needs: test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Trigger Vercel deploy hook
-        env:
-          HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
-        run: |
-          if [ -z "$HOOK" ]; then echo "VERCEL_DEPLOY_HOOK not set; skipping."; exit 0; fi
-          curl -fsS -X POST "$HOOK" > /dev/null && echo "Website deploy triggered."

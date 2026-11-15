@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy policy · Company Lookup</title>
+<meta name="description" content="Privacy policy for Company Lookup and the Company Lookup connector for Claude and ChatGPT.">
+<link rel="icon" href="/company-lookup-icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/doc.css">
+</head>
+<body>
+<main>
+  <p class="crumb"><a href="/">Company Lookup</a> / Privacy policy</p>
+  <h1>Privacy policy</h1>
+  <p class="muted">Last updated 15 November 2026</p>
+
+  <p>This policy covers Company Lookup at <a href="/">company-lookup.vercel.app</a>, its API, and the Company Lookup connector at <code>https://company-lookup.vercel.app/api/mcp</code>, which AI assistants such as Claude and ChatGPT can use. They are operated by <strong>Latiluco, LLC</strong> ("we", "us"), the company of Lars E. Wallin, which is responsible for the data described here. If you run your own copy of the open-source code, this policy does not apply to it.</p>
+  <p>In short: Company Lookup is free and published for information and demonstration. There are no accounts, no cookies, no analytics and no ads. Searches are not stored in a database, and nothing is sold or used to train AI models.</p>
+
+  <h2>What we receive</h2>
+  <p>When you or your AI assistant run a lookup, our server receives:</p>
+  <ul>
+    <li>what you looked up: the company name, number, LEI, ISIN or ticker, the country if given, the company id of a result, and any website address you enter;</li>
+    <li>standard request details that every website receives: the IP address the request came from, the time, and the browser or client type.</li>
+  </ul>
+  <p>When the lookup runs through an AI assistant, the request comes from the assistant's servers, so we normally see their address, not yours.</p>
+  <p>The connector only receives what the assistant puts in the tool call (the lookup above). It does not receive your conversation, chat history, memory or files, and it does not ask for them.</p>
+
+  <h2>How we use it</h2>
+  <ul>
+    <li>To answer the lookup.</li>
+    <li>To stop any one address from using up the public registers' limits. For this, the requesting IP address is held in the server's memory for 5 minutes, then dropped.</li>
+    <li>To find and fix errors, using the hosting provider's request logs.</li>
+  </ul>
+  <p>We do not build profiles, track you across sites, sell data, show ads, or use lookups to train AI models.</p>
+
+  <h2>Storage and retention</h2>
+  <ul>
+    <li><strong>No search history.</strong> We keep no database of who searched for what.</li>
+    <li><strong>Cache.</strong> Results are cached on our hosting provider's network, usually for 1 to 6 hours and at most about 2 days, so repeat lookups are fast. The cache holds the public company data in the result, not who asked for it.</li>
+    <li><strong>Request logs.</strong> Our hosting provider, Vercel, keeps standard request logs (which include the address and the lookup text in the URL) for a limited period set by Vercel. We read them only to fix problems.</li>
+  </ul>
+
+  <h2>Who else receives data</h2>
+  <ul>
+    <li><strong>The public sources.</strong> To answer a lookup, the search text or company number is sent to the public registers and services needed for it, such as GLEIF, national company registers, the EU VAT check (VIES), Wikidata and domain registries. The full list is on the <a href="/connector#sources">connector page</a>. They receive the request from our server, not from you.</li>
+    <li><strong>Hosting.</strong> Vercel Inc. hosts the site and the connector, mainly in the United States.</li>
+    <li><strong>Fonts.</strong> The lookup page loads a font from Google Fonts, so Google receives your IP address when you open it. The connector does not use it.</li>
+    <li><strong>Your AI assistant.</strong> If you use the connector from Claude, ChatGPT or another assistant, that provider handles your conversation under its own privacy policy.</li>
+  </ul>
+  <p>We share nothing else, except where the law requires it.</p>
+
+  <h2>Company data we show</h2>
+  <p>Lookups return information about companies from public registers, including the names of directors or officers where a register publishes them. We leave out birth dates, personal e-mail addresses and private founders where registers include them, and the tools are not meant for looking up private individuals. If you think something shown about you is wrong, contact us. The register it came from is the authority, and we will tell you how to correct it there.</p>
+
+  <h2>Your rights</h2>
+  <p>Depending on where you live (for example under the GDPR in the EU and UK, or state privacy laws in the US), you can ask what personal data we hold about you, and ask us to correct or delete it. Because we keep no accounts or search history, we will usually hold nothing beyond short-lived logs, but we will check and answer within 30 days.</p>
+
+  <h2>Children</h2>
+  <p>Company Lookup is for businesses and is not meant for children.</p>
+
+  <h2>Changes</h2>
+  <p>If this policy changes, the new version will be posted here with a new date.</p>
+
+  <h2>Contact</h2>
+  <p>Latiluco, LLC · <a href="mailto:lars.e.wallin@gmail.com">lars.e.wallin@gmail.com</a></p>
+
+  <footer><a href="/">Company Lookup</a> · <a href="/connector">Connector</a> · <a href="/terms">Terms of use</a> · © 2026 Latiluco, LLC</footer>
+</main>
+</body>
+</html>
