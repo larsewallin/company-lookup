@@ -22,14 +22,24 @@ const ROUTES = {
   '/api/bulk-import': () => require('./api/bulk-import'),
 };
 
+const HTML = 'text/html; charset=utf-8';
+const STATIC = {
+  '/': ['index.html', HTML], '/index.html': ['index.html', HTML],
+  '/connector': ['connector.html', HTML], '/privacy': ['privacy.html', HTML], '/terms': ['terms.html', HTML],
+  '/doc.css': ['doc.css', 'text/css; charset=utf-8'],
+  '/company-lookup-icon.svg': ['company-lookup-icon.svg', 'image/svg+xml'],
+  '/company-lookup-icon.png': ['company-lookup-icon.png', 'image/png'],
+};
+
 const PORT = Number(process.env.PORT) || 3000;
 
 http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   try {
-    if (url.pathname === '/' || url.pathname === '/index.html') {
-      res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      return res.end(fs.readFileSync(path.join(__dirname, 'index.html')));
+    const page = STATIC[url.pathname];
+    if (page) {
+      res.setHeader('Content-Type', page[1]);
+      return res.end(fs.readFileSync(path.join(__dirname, page[0])));
     }
     const route = ROUTES[url.pathname];
     if (!route) { res.statusCode = 404; return res.end('Not found'); }

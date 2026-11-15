@@ -1,0 +1,32 @@
+/* Shared style for text pages (privacy, terms, connector docs). Matches the home page. */
+:root { --bg: #fafafa; --card: #ffffff; --line: #e6e6e6; --text: #1a1a1a; --muted: #5f5f5f; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #121212; --card: #181818; --line: #2a2a2a; --text: #ececec; --muted: #a3a3a3; }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 15px; line-height: 1.65;
+}
+main { max-width: 720px; margin: 0 auto; padding: 56px 24px 64px; }
+.crumb { color: var(--muted); font-size: 13px; margin: 0 0 24px; }
+h1 { font-size: 28px; font-weight: 400; margin: 0 0 4px; letter-spacing: -0.01em; }
+h2 { font-size: 17px; font-weight: 500; margin: 40px 0 12px; }
+h3 { font-size: 15px; font-weight: 500; margin: 24px 0 8px; }
+.muted { color: var(--muted); }
+a { color: inherit; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+a:hover { color: var(--muted); }
+ul { padding-left: 20px; }
+li { margin: 4px 0; }
+code, pre {
+  font-family: inherit; background: var(--card); border: 1px solid var(--line); border-radius: 4px;
+}
+code { padding: 1px 5px; font-size: 14px; word-break: break-all; }
+pre { padding: 12px 14px; overflow-x: auto; }
+pre code { border: 0; padding: 0; background: none; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; margin: 8px 0; }
+th, td { text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); padding: 6px 8px 6px 0; }
+th { font-weight: 500; }
+footer { margin-top: 56px; color: var(--muted); font-size: 13px; }
+@media (max-width: 480px) { main { padding-top: 40px; } h1 { font-size: 24px; } }
