@@ -1,7 +1,7 @@
 {
   "name": "company-lookup",
   "version": "1.0.0",
-  "description": "Check whether a company is real and in good standing, from official company registers worldwide, GLEIF, EU VAT and domain records. No dependencies.",
+  "description": "Check whether a company is real and in good standing, from official company registers worldwide, GLEIF, EU VAT and domain records, plus Overture Maps presence data.",
   "license": "MIT",
   "author": "Lars E. Wallin (Latiluco, LLC)",
   "repository": {

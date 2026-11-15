@@ -7,7 +7,8 @@
 Built for credit, finance, procurement and compliance teams who need to know whether a new customer or supplier is real and in good standing.
 
 - **35 national registers** in [COUNTRIES.md](COUNTRIES.md), plus every company worldwide that holds an LEI.
-- **No dependencies.** Plain Node.js 20+, no database required.
+- **Presence data** from [Overture Maps](https://overturemaps.org) places: locations and contact details for businesses, including in countries without an open register. Always labelled: not an official record.
+- **One small dependency** ([hyparquet](https://github.com/hyparam/hyparquet), pure JavaScript, for reading Overture's Parquet files). Node.js 20+, no database required; presence data needs Node 22.15+.
 - **Three ways to use it:** as a library in your own app, as an HTTP API, or as an MCP server for Claude, ChatGPT and other AI assistants.
 - **Try it:** [open-company-lookup.vercel.app](https://open-company-lookup.vercel.app), or add `https://open-company-lookup.vercel.app/api/mcp` to Claude or ChatGPT as a connector.
 
@@ -22,7 +23,7 @@ cp .env.example .env      # optional: add keys and your contact details
 node server.js            # then open http://localhost:3000
 ```
 
-There is nothing to install. The live-API countries, GLEIF, Wikidata, VIES and RDAP work straight away.
+Run `npm install` once (it adds hyparquet). The live-API countries, GLEIF, Wikidata, VIES and RDAP work straight away.
 
 ## Use it in your own application
 
@@ -37,6 +38,10 @@ const card = await lookup.company(results[0].id, { website: 'siemens.com' });
 
 console.log(card.verdict);                               // 'stop' | 'check' | 'clear'
 console.log(card.flags.map((f) => `${f.level}: ${f.label}`));
+
+// Presence data: one Overture Maps place by its GERS ID (lon/lat optional, faster)
+const place = await lookup.presence('6f8bce4f-a274-4494-9f2c-dd051bca0bb4', { lon: -0.20729, lat: 51.50255 });
+console.log(place.tier, place.notice, place.linked_entity);
 ```
 
 Install it straight from GitHub with `npm install github:larsewallin/company-lookup`, or copy the folder into your project. Errors are thrown as `LookupError` with an HTTP-style `status` and a readable message.
@@ -49,6 +54,8 @@ Run `node server.js`, or deploy the repo to Vercel as it is (the `api/` folder b
 |---|---|
 | `GET /api/search?q=Tesco&country=GB` | Up to 20 matches, each with an `id` |
 | `GET /api/company?id=gb:00445790&website=tesco.com` | The full company card |
+| `GET /api/presence?id=<GERS ID>&lon=-0.20729&lat=51.50255` | Presence card for one Overture Maps place (`lon`/`lat` optional) |
+| `POST /api/presence-report` | Report a wrong link: JSON `{ "id": "<GERS ID>", "entity_id": "gb:…", "reason": "…" }` |
 | `GET /api/coverage` | How many companies each source holds |
 | `POST /api/mcp` | MCP server (see below) |
 
@@ -56,7 +63,7 @@ Country codes are ISO 3166-1 alpha-2. Giving a country adds that country's natio
 
 ### As an MCP server for AI assistants
 
-`/api/mcp` is a remote MCP server (Streamable HTTP, no sign-in) with two read-only tools: `search_companies` and `get_company_card`. Add its URL as a custom connector in Claude or ChatGPT, or in any MCP client. A hosted copy runs at `https://open-company-lookup.vercel.app/api/mcp`.
+`/api/mcp` is a remote MCP server (Streamable HTTP, no sign-in) with three read-only tools: `search_companies`, `get_company_card` and `get_presence_card`. Add its URL as a custom connector in Claude or ChatGPT, or in any MCP client. A hosted copy runs at `https://open-company-lookup.vercel.app/api/mcp`.
 
 ## The company card
 
@@ -83,6 +90,46 @@ rules       the thresholds the flags used
 - **Stop:** something serious on the record, such as dissolved, struck off, insolvent or in liquidation.
 - **Check:** worth a closer look, such as overdue accounts, a company younger than 24 months, a website domain registered in the last 12 months, a recent name change, an invalid VAT number or a parent that is not active.
 - **Note:** context, such as a lapsed LEI or a parent that is not disclosed.
+
+## Data tiers
+
+Every result says which tier it comes from. When tiers disagree, the higher one wins: presence data never overwrites a register fact.
+
+| Tier | `tier` value | Sources | What it is |
+|---|---|---|---|
+| 1. Official registers | `register` | National company registers ([COUNTRIES.md](COUNTRIES.md)), UK Companies House | Legal facts: name, number, status, address, officers |
+| 2. Global and supporting records | `gleif` | GLEIF (LEI), EU VIES, Wikidata, RDAP | Identifiers, parents, VAT validity, listings, domain age |
+| 3. Presence data | `presence` | Overture Maps places (Meta, Microsoft, Foursquare, BrightQuery, AllThePlaces and others, conflated) | A business appears to exist at an address. **Not an official record and not a legal identifier.** |
+
+### Presence data (Overture Maps)
+
+`get_presence_card` / `GET /api/presence` returns one place by its [GERS ID](https://docs.overturemaps.org/gers/), the stable ID Overture uses across releases (also the feature ID in Overture's PMTiles):
+
+```text
+tier              'presence'
+notice            "Presence data from Overture Maps. Not an official record and not a legal identifier."
+id                GERS ID
+name, categories  { primary, basic, hierarchy, alternates } from Overture's taxonomy
+address           { street, locality, postcode, region, country }
+location          { lon, lat }
+websites, phones, socials, brand     only where present
+confidence        Overture's own score (0–1)
+sources           [{ dataset, license, update_time, record_id, properties }]
+attribution       "© Overture Maps Foundation. Sources: <dataset> (<licence>)…"
+release           the Overture release the record came from, e.g. 2026-10-21.0
+checked_at        when Company Lookup fetched it
+linked_entity     the legal entity this place is linked to (strong match), or null
+possible_matches  "possibly the same as…" entities (probable matches, never merged)
+official_register "Search the official register": search_companies arguments, where the country has a register
+```
+
+A presence card has no verdict, flags or status. The current release is read from Overture's [STAC catalog](https://stac.overturemaps.org/catalog.json) every hour, never hard-coded (releases are removed after about 60 days). The place is read straight from the public GeoParquet files with HTTP range requests: with `lon`/`lat`, only the row groups around the point; without, the GERS registry gives its file and bounding box.
+
+**Linking to legal entities.** Candidates come from `search_companies(name, country)`. A place is linked automatically only on a **strong match**: the same website domain (registrable domain; social and listing sites don't count) **and** a similar name (lower case, no punctuation, no legal suffixes such as Ltd, GmbH, SA, S.L., Tbk) in the same country. A **probable match** (similar name and the same street or postcode, or the same domain with a very different name) is shown as "possibly the same as…" and never merged. Brand alone never matches: franchise outlets are often separate companies. One entity can have many places. Links are kept in the Blob store (`presence/index.json`), keyed on the GERS ID with the entity ID, level, evidence and date.
+
+In search, legal entities come first; places linked to one of them appear under it as `locations`, and other known places follow in a separate `presence` array, each labelled "Not an official record". A company card can carry `presence.locations`. Anyone can report a wrong link with `POST /api/presence-report`; it is held out until reviewed (to review, edit `presence/index.json` in the Blob store: set the link's `status` back to `active`, or remove it and add the entity ID to `rejected`).
+
+Name search over all Overture places is not built yet: search only shows places that have been looked up before. See [docs/presence-plan.md](docs/presence-plan.md).
 
 ## Configuration
 
@@ -129,6 +176,9 @@ lib/bulk/           importers for the hosted-index countries, ZIP/XLSX/CSV reade
 lib/sources.js      UK Companies House and RDAP domain records
 lib/vies.js         EU VAT check
 lib/wikidata.js     Wikidata enrichment and stock tickers
+lib/overture.js     Overture Maps reader (STAC release, GERS registry, GeoParquet range reads)
+lib/presence.js     presence card, name and domain normalisation, match rules
+lib/presence-store.js links between places and legal entities (Blob store)
 lib/mcp.js          MCP server
 api/                Vercel functions (also served by server.js)
 index.html          the demo page
@@ -139,7 +189,7 @@ Run the tests with `npm test`. They are offline and need no network.
 
 ## Data sources and licences
 
-Company Lookup only reads public sources, and each card names the source of every fact. When you reuse the data, follow each publisher's terms. Among them: GLEIF and Wikidata (CC0), UK Companies House (Open Government Licence v3.0), Finland PRH (CC BY 4.0), Norway Brønnøysund (NLOD), Taiwan GCIS (Open Government Data License 1.0), Cyprus (CC BY 4.0) and India Data Portal (ODC-By). The EU VAT check (VIES) is meant for checking your own trading partners. Respect each source's rate limits; the HTTP API has a per-address limit built in.
+Company Lookup only reads public sources, and each card names the source of every fact. When you reuse the data, follow each publisher's terms. Among them: GLEIF and Wikidata (CC0), UK Companies House (Open Government Licence v3.0), Finland PRH (CC BY 4.0), Norway Brønnøysund (NLOD), Taiwan GCIS (Open Government Data License 1.0), Cyprus (CC BY 4.0) and India Data Portal (ODC-By). Overture Maps places carry a licence per record in `sources[].license`: mostly CDLA Permissive 2.0, Apache 2.0 for Foursquare-sourced records and CC0 for some (such as AllThePlaces); show "© Overture Maps Foundation" with the source dataset and licence, as the presence card's `attribution` does. The EU VAT check (VIES) is meant for checking your own trading partners. Respect each source's rate limits; the HTTP API has a per-address limit built in.
 
 Officers' names are shown only where a register publishes them. Birth dates, personal e-mail addresses and private individuals' records are left out. Do not use the tool to profile people.
 
