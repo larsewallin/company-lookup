@@ -1,5 +1,5 @@
--- Extract Overture Maps places for the presence-data pilot countries (lib/places.js), one NDJSON file set
--- per country under extract/cc=XX/. Run by .github/workflows/places-monthly.yml with OVERTURE_RELEASE set.
+-- Extract Overture Maps places for the presence-data pilot countries (lib/places.js): one Parquet file, then
+-- one NDJSON file per country at extract/cc=XX/data_0.json (the directories must exist). Run by .github/workflows/places-monthly.yml with OVERTURE_RELEASE set.
 -- Kept: named places that are not permanently closed, outside geographic and cultural/historic categories.
 INSTALL httpfs; LOAD httpfs;
 SET s3_region = 'us-west-2';
@@ -24,5 +24,11 @@ COPY (
     AND names.primary IS NOT NULL AND length(trim(names.primary)) >= 2
     AND coalesce(operating_status, '') <> 'permanently_closed'
     AND coalesce(taxonomy.hierarchy[1], '') NOT IN ('geographic_entities', 'cultural_and_historic')
-) TO 'extract' (FORMAT json, PARTITION_BY (cc), OVERWRITE_OR_IGNORE true);
-SELECT cc, count(*) FROM read_json('extract/*/*.json', hive_partitioning = 1) GROUP BY 1 ORDER BY 2 DESC;
+) TO 'extract/places.parquet' (FORMAT parquet);
+SELECT cc, count(*) AS places FROM 'extract/places.parquet' GROUP BY 1 ORDER BY 2 DESC;
+COPY (SELECT * EXCLUDE (cc) FROM 'extract/places.parquet' WHERE cc = 'DE') TO 'extract/cc=DE/data_0.json' (FORMAT json);
+COPY (SELECT * EXCLUDE (cc) FROM 'extract/places.parquet' WHERE cc = 'IT') TO 'extract/cc=IT/data_0.json' (FORMAT json);
+COPY (SELECT * EXCLUDE (cc) FROM 'extract/places.parquet' WHERE cc = 'ES') TO 'extract/cc=ES/data_0.json' (FORMAT json);
+COPY (SELECT * EXCLUDE (cc) FROM 'extract/places.parquet' WHERE cc = 'NL') TO 'extract/cc=NL/data_0.json' (FORMAT json);
+COPY (SELECT * EXCLUDE (cc) FROM 'extract/places.parquet' WHERE cc = 'BE') TO 'extract/cc=BE/data_0.json' (FORMAT json);
+COPY (SELECT * EXCLUDE (cc) FROM 'extract/places.parquet' WHERE cc = 'AT') TO 'extract/cc=AT/data_0.json' (FORMAT json);

@@ -67,6 +67,7 @@ jobs:
       - name: Extract places (DuckDB)
         if: env.SKIP != '1'
         run: |
+          for cc in DE IT ES NL BE AT; do mkdir -p "extract/cc=$cc"; done
           OVERTURE_RELEASE=$REL ./duckdb -c ".read scripts/places/extract.sql"
           du -sh extract/*
       - name: Build index packs
