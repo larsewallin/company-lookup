@@ -658,11 +658,19 @@
               },
               "isins": {
                 "type": [
-                  "array",
+                  "object",
                   "null"
                 ],
-                "items": {
-                  "type": "string"
+                "properties": {
+                  "total": {
+                    "type": "number"
+                  },
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
             },
@@ -1532,7 +1540,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "e.g. gb:00445790, lei:…"
+            "description": "e.g. gb:00445790, lei:\u2026"
           },
           {
             "name": "number",
