@@ -22,6 +22,7 @@ const ROUTES = {
   '/api/presence': () => require('./api/presence'),
   '/api/presence-report': () => require('./api/presence-report'),
   '/api/bulk-import': () => require('./api/bulk-import'),
+  '/api/places-import': () => require('./api/places-import'),
   // Stable v1 routes (docs/api-v1.md): the same handlers with the v1 contract.
   '/v1/search': () => require('./api/v1/search'),
   '/v1/company': () => require('./api/v1/company'),

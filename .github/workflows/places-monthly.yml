@@ -1,0 +1,98 @@
+# Monthly presence-data index for name search over Overture places (phase 3 pilot: DE, IT, ES, NL, BE, AT).
+# 1. DuckDB extracts the pilot countries' places from Overture's public GeoParquet (scripts/places/extract.sql).
+# 2. scripts/places/build.js builds the word index (lib/bulk/index.js layout) as packs.
+# 3. The packs go on a GitHub release (tag places-<Overture release>); POST /api/places-import copies them into
+#    the Vercel Blob store (the site signs in with OIDC, so no Blob token is needed here) and switches the manifest.
+# A push to the places-pilot branch only builds AT and DE, as a trial, without publishing or importing.
+name: Places index (monthly)
+
+on:
+  schedule:
+    - cron: '17 4 26 * *'
+  workflow_dispatch:
+    inputs:
+      countries:
+        description: Countries to build
+        default: DE IT ES NL BE AT
+      import:
+        description: Publish the release and import it into Blob
+        type: boolean
+        default: true
+      force:
+        description: Rebuild even if the live index already has this Overture release
+        type: boolean
+        default: false
+  push:
+    branches: [places-pilot]
+    paths: [scripts/places/**, lib/places.js, lib/bulk/index.js, .github/workflows/places-monthly.yml]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: places-index
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    env:
+      SITE: https://open-company-lookup.vercel.app
+      COUNTRIES: ${{ github.event_name == 'push' && 'AT DE' || inputs.countries || 'DE IT ES NL BE AT' }}
+      DO_IMPORT: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.import) }}
+      FORCE: ${{ github.event_name == 'workflow_dispatch' && inputs.force }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install DuckDB
+        run: |
+          curl -sSL -o duckdb.zip https://github.com/duckdb/duckdb/releases/download/v1.4.1/duckdb_cli-linux-amd64.zip
+          unzip -q duckdb.zip && chmod +x duckdb && ./duckdb --version
+      - name: Overture release
+        run: |
+          REL=$(curl -sf https://stac.overturemaps.org/catalog.json | jq -r .latest)
+          test -n "$REL" && test "$REL" != null
+          echo "REL=$REL" >> "$GITHUB_ENV"; echo "TAG=places-$REL" >> "$GITHUB_ENV"
+          echo "Overture release $REL"
+      - name: Skip if the live index is current
+        if: env.DO_IMPORT == 'true' && env.FORCE != 'true'
+        run: |
+          live=$(curl -sf "$SITE/v1/health" | jq -r --arg c "$COUNTRIES" '[($c|split(" "))[] as $cc | .places[$cc].release // "none"] | unique | join(" ")' || echo none)
+          echo "Live index releases: $live"
+          if [ "$live" = "$REL" ]; then echo "SKIP=1" >> "$GITHUB_ENV"; echo "Already on $REL; nothing to do."; fi
+      - name: Extract places (DuckDB)
+        if: env.SKIP != '1'
+        run: |
+          OVERTURE_RELEASE=$REL ./duckdb -c ".read scripts/places/extract.sql"
+          du -sh extract/*
+      - name: Build index packs
+        if: env.SKIP != '1'
+        run: |
+          for cc in $COUNTRIES; do
+            /usr/bin/time -v node --max-old-space-size=12000 scripts/places/build.js "$cc" extract out "$REL" 2> >(grep -E "Maximum resident|Elapsed" >&2)
+          done
+          ls -la out | tail -n +2 | awk '{s+=$5} END {print NR " files, " int(s/1e6) " MB"}'
+          cat out/*-meta.json | jq -c '{country, count, files, packs, split: (.split|length)}'
+      - name: Publish release
+        if: env.SKIP != '1' && env.DO_IMPORT == 'true'
+        run: |
+          gh release delete "$TAG" -y --cleanup-tag 2>/dev/null || true
+          gh release create "$TAG" out/* --prerelease --title "Presence-data index $REL" --notes "Word index of Overture Maps places for name search in Company Lookup (presence data, not an official record). Built from Overture release $REL. © Overture Maps Foundation; each record keeps its source dataset and licence (mostly CDLA-Permissive-2.0, Apache-2.0 for Foursquare-sourced records, CC0 for some)."
+      - name: Import into Blob
+        if: env.SKIP != '1' && env.DO_IMPORT == 'true'
+        run: |
+          for cc in $COUNTRIES; do
+            lc=$(echo "$cc" | tr A-Z a-z); n=$(jq .packs "out/$lc-meta.json")
+            for i in $(seq 0 $((n - 1))); do
+              curl -fsS -X POST --retry 4 --retry-all-errors --max-time 300 "$SITE/api/places-import?cc=$cc&tag=$TAG&pack=$i" | jq -c '{country, pack, files, seconds}'
+            done
+            curl -fsS -X POST --retry 2 --max-time 300 "$SITE/api/places-import?cc=$cc&tag=$TAG&finalize=1" | jq -c '{country, release, count, removed}'
+          done
+      - name: Remove older index releases
+        if: env.SKIP != '1' && env.DO_IMPORT == 'true'
+        run: |
+          gh release list --limit 100 --json tagName -q '.[].tagName' | grep '^places-' | grep -vx "$TAG" | xargs -r -n1 gh release delete -y --cleanup-tag
