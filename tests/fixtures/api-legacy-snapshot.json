@@ -1,0 +1,495 @@
+{
+ "search ok": {
+  "status": 200,
+  "headers": {
+   "content-type": "application/json; charset=utf-8",
+   "x-content-type-options": "nosniff",
+   "cache-control": "public, max-age=300, s-maxage=3600, stale-while-revalidate=25200"
+  },
+  "body": {
+   "query": "Example Trading",
+   "country": "GB",
+   "results": [
+    {
+     "id": "gb:01234567",
+     "source": "Companies House",
+     "name": "EXAMPLE TRADING LIMITED",
+     "country": "GB",
+     "city": null,
+     "status": "active",
+     "number": "01234567",
+     "address": "1 High Street, London, EC1A 1AA",
+     "incorporated": "2010-03-15",
+     "tier": "register"
+    }
+   ],
+   "presence": [],
+   "warnings": []
+  }
+ },
+ "search too short": {
+  "status": 400,
+  "headers": {
+   "content-type": "application/json; charset=utf-8",
+   "x-content-type-options": "nosniff",
+   "cache-control": "no-store"
+  },
+  "body": {
+   "error": "Enter between 2 and 100 characters."
+  }
+ },
+ "search bad country": {
+  "status": 400,
+  "headers": {
+   "content-type": "application/json; charset=utf-8",
+   "x-content-type-options": "nosniff",
+   "cache-control": "no-store"
+  },
+  "body": {
+   "error": "Unknown country."
+  }
+ },
+ "search POST": {
+  "status": 405,
+  "headers": {
+   "content-type": "application/json; charset=utf-8",
+   "x-content-type-options": "nosniff",
+   "cache-control": "no-store"
+  },
+  "body": {
+   "error": "GET only"
+  }
+ },
+ "company ok": {
+  "status": 200,
+  "headers": {
+   "content-type": "application/json; charset=utf-8",
+   "x-content-type-options": "nosniff",
+   "cache-control": "public, max-age=300, s-maxage=21600, stale-while-revalidate=151200"
+  },
+  "body": {
+   "as_of": "2026-11-15",
+   "identity": {
+    "legal_name": "EXAMPLE TRADING LIMITED",
+    "country": "GB",
+    "legal_form": "Ltd",
+    "status": "Active",
+    "status_detail": null,
+    "incorporated": "2010-03-15",
+    "incorporated_source": "Companies House",
+    "age": "16 years, 8 months",
+    "ceased": null,
+    "registered_address": "1 High Street, London, EC1A 1AA, England",
+    "hq_address": null,
+    "sic_codes": [
+     "46900"
+    ],
+    "industry": [],
+    "other_names": [],
+    "employees": null,
+    "size": null,
+    "website": null,
+    "vat": null,
+    "auditor": null,
+    "share_capital": null,
+    "extra": [],
+    "sole_trader": false,
+    "former_names": [],
+    "register": {
+     "name": "Companies House (UK)",
+     "number": "01234567",
+     "url": "https://find-and-update.company-information.service.gov.uk/company/01234567"
+    }
+   },
+   "ids": {
+    "lei": null,
+    "national": "01234567",
+    "opencorporates": null,
+    "isins": null
+   },
+   "group": {
+    "lei": null
+   },
+   "people": {
+    "officers": [
+     {
+      "name": "SMITH, Jane",
+      "role": "Director",
+      "appointed": "2015-01-01"
+     }
+    ],
+    "owners": []
+   },
+   "filings": {
+    "last_accounts_made_up_to": "2025-12-31",
+    "last_accounts_type": "Full",
+    "next_accounts_due": "2027-09-30",
+    "accounts_overdue": false,
+    "next_confirmation_statement_due": "2027-03-29",
+    "confirmation_statement_overdue": false
+   },
+   "charges": {
+    "outstanding": 0,
+    "total": 0,
+    "recent": [],
+    "lenders": []
+   },
+   "web": null,
+   "financials": null,
+   "about": null,
+   "flags": [],
+   "verdict": "clear",
+   "sources": [
+    {
+     "name": "GLEIF",
+     "result": "No LEI (common for small companies)",
+     "url": "https://search.gleif.org/"
+    },
+    {
+     "name": "Companies House",
+     "result": "Found",
+     "url": "https://find-and-update.company-information.service.gov.uk/company/01234567"
+    }
+   ],
+   "gaps": [
+    "Wikidata could not be reached, so website, listing and headquarters details may be missing.",
+    "No website entered or found, so domain age was not checked.",
+    "News and web presence are not checked yet."
+   ],
+   "next_step": "Accounts made up to 2025-12-31 are on file at Companies House, so a financial summary is possible.",
+   "rules": {
+    "youngCompanyMonths": 24,
+    "newDomainMonths": 12,
+    "recentChangeMonths": 12
+   },
+   "id": "gb:01234567"
+  }
+ },
+ "company unknown ref": {
+  "status": 400,
+  "headers": {
+   "content-type": "application/json; charset=utf-8",
+   "x-content-type-options": "nosniff",
+   "cache-control": "no-store"
+  },
+  "body": {
+   "error": "Unknown company reference."
+  }
+ },
+ "company bad website": {
+  "status": 400,
+  "headers": {
+   "content-type": "application/json; charset=utf-8",
+   "x-content-type-options": "nosniff",
+   "cache-control": "no-store"
+  },
+  "body": {
+   "error": "That website address does not look right."
+  }
+ },
+ "company overture id": {
+  "status": 400,
+  "headers": {
+   "content-type": "application/json; charset=utf-8",
+   "x-content-type-options": "nosniff",
+   "cache-control": "no-store"
+  },
+  "body": {
+   "error": "This is a presence record from Overture Maps, not a legal entity. Use get_presence_card (/api/presence)."
+  }
+ },
+ "company not found": {
+  "status": 404,
+  "headers": {
+   "content-type": "application/json; charset=utf-8",
+   "x-content-type-options": "nosniff",
+   "cache-control": "public, max-age=300, s-maxage=3600, stale-while-revalidate=25200"
+  },
+  "body": {
+   "error": "No company 07777777 on the Companies House register.",
+   "flag": "Not on the register"
+  }
+ },
+ "company upstream busy": {
+  "status": 503,
+  "headers": {
+   "content-type": "application/json; charset=utf-8",
+   "x-content-type-options": "nosniff",
+   "cache-control": "no-store"
+  },
+  "body": {
+   "error": "Companies House is busy. Try again in a few minutes."
+  }
+ },
+ "company upstream down": {
+  "status": 502,
+  "headers": {
+   "content-type": "application/json; charset=utf-8",
+   "x-content-type-options": "nosniff",
+   "cache-control": "no-store"
+  },
+  "body": {
+   "error": "Companies House could not be reached (HTTP 500). Try again shortly."
+  }
+ },
+ "presence ok": {
+  "status": 200,
+  "headers": {
+   "content-type": "application/json; charset=utf-8",
+   "x-content-type-options": "nosniff",
+   "cache-control": "public, max-age=300, s-maxage=3600, stale-while-revalidate=25200"
+  },
+  "body": {
+   "tier": "presence",
+   "notice": "Presence data from Overture Maps. Not an official record and not a legal identifier.",
+   "id": "6f8bce4f-a274-4494-9f2c-dd051bca0bb4",
+   "name": "Coleago Consulting Ltd",
+   "categories": {
+    "primary": "business_consulting",
+    "basic": "professional_service",
+    "hierarchy": [
+     "services_and_business",
+     "professional_service",
+     "business_consulting"
+    ],
+    "alternates": []
+   },
+   "address": {
+    "street": "77 ABBOTSBURY ROAD",
+    "locality": "LONDON",
+    "postcode": "W14 8EP",
+    "region": "WSM",
+    "country": "GB"
+   },
+   "location": {
+    "lon": -0.207295,
+    "lat": 51.502556
+   },
+   "websites": [
+    "http://www.coleago.com/"
+   ],
+   "phones": [
+    "447974356258"
+   ],
+   "confidence": 0.5,
+   "sources": [
+    {
+     "dataset": "BrightQuery",
+     "license": "CDLA-Permissive-2.0",
+     "update_time": "2026-10-14T15:26:05.933Z",
+     "record_id": "33364471169",
+     "properties": [
+      "record",
+      "operating_status"
+     ]
+    },
+    {
+     "dataset": "Overture",
+     "license": "CDLA-Permissive-2.0",
+     "update_time": "2026-10-15T18:00:21Z",
+     "record_id": null,
+     "properties": [
+      "confidence"
+     ]
+    }
+   ],
+   "attribution": "© Overture Maps Foundation. Sources: BrightQuery (CDLA-Permissive-2.0).",
+   "release": "2026-10-21.0",
+   "checked_at": "2026-11-15T12:00:00.000Z",
+   "linked_entity": {
+    "id": "gb:06960521",
+    "name": "COLEAGO CONSULTING LIMITED",
+    "register": "Companies House",
+    "number": "06960521",
+    "level": "strong",
+    "evidence": {
+     "domain": "coleago.com",
+     "name": [
+      "Coleago Consulting Ltd",
+      "COLEAGO CONSULTING LIMITED"
+     ],
+     "country": "GB"
+    },
+    "linked_on": "2026-11-15",
+    "text": "This place is linked to COLEAGO CONSULTING LIMITED (Companies House, 06960521).",
+    "report": {
+     "method": "POST",
+     "url": "/api/presence-report",
+     "body": {
+      "id": "6f8bce4f-a274-4494-9f2c-dd051bca0bb4",
+      "entity_id": "gb:06960521"
+     }
+    }
+   },
+   "possible_matches": [],
+   "official_register": {
+    "label": "Search the official register",
+    "register": "Companies House",
+    "tool": "search_companies",
+    "arguments": {
+     "query": "Coleago Consulting Ltd",
+     "country": "GB"
+    }
+   }
+  }
+ },
+ "presence bad id": {
+  "status": 400,
+  "headers": {
+   "content-type": "application/json; charset=utf-8",
+   "x-content-type-options": "nosniff",
+   "cache-control": "no-store"
+  },
+  "body": {
+   "error": "Give an Overture GERS ID, e.g. 6f8bce4f-a274-4494-9f2c-dd051bca0bb4."
+  }
+ },
+ "presence bad lon": {
+  "status": 400,
+  "headers": {
+   "content-type": "application/json; charset=utf-8",
+   "x-content-type-options": "nosniff",
+   "cache-control": "no-store"
+  },
+  "body": {
+   "error": "lon and lat must be decimal degrees."
+  }
+ },
+ "presence not found": {
+  "status": 404,
+  "headers": {
+   "content-type": "application/json; charset=utf-8",
+   "x-content-type-options": "nosniff",
+   "cache-control": "public, max-age=300, s-maxage=3600, stale-while-revalidate=25200"
+  },
+  "body": {
+   "error": "No place 00000000-0000-0000-0000-000000000000 in the current Overture Maps release.",
+   "tier": "presence",
+   "notice": "Presence data from Overture Maps. Not an official record and not a legal identifier."
+  }
+ },
+ "report bad body": {
+  "status": 400,
+  "headers": {
+   "content-type": "application/json; charset=utf-8",
+   "x-content-type-options": "nosniff",
+   "cache-control": "no-store"
+  },
+  "body": {
+   "error": "Give id (the GERS ID) and entity_id (the linked entity)."
+  }
+ },
+ "report GET": {
+  "status": 405,
+  "headers": {
+   "content-type": "application/json; charset=utf-8",
+   "x-content-type-options": "nosniff",
+   "cache-control": "no-store"
+  },
+  "body": {
+   "error": "POST only"
+  }
+ },
+ "report no such link": {
+  "status": 404,
+  "headers": {
+   "content-type": "application/json; charset=utf-8",
+   "x-content-type-options": "nosniff",
+   "cache-control": "no-store"
+  },
+  "body": {
+   "error": "No such link."
+  }
+ },
+ "report ok": {
+  "status": 200,
+  "headers": {
+   "content-type": "application/json; charset=utf-8",
+   "x-content-type-options": "nosniff",
+   "cache-control": "no-store"
+  },
+  "body": {
+   "ok": true,
+   "status": "reported",
+   "message": "Thank you. The link is held back until it is reviewed."
+  }
+ },
+ "presence after report": {
+  "status": 200,
+  "headers": {
+   "content-type": "application/json; charset=utf-8",
+   "x-content-type-options": "nosniff",
+   "cache-control": "public, max-age=300, s-maxage=3600, stale-while-revalidate=25200"
+  },
+  "body": {
+   "tier": "presence",
+   "notice": "Presence data from Overture Maps. Not an official record and not a legal identifier.",
+   "id": "6f8bce4f-a274-4494-9f2c-dd051bca0bb4",
+   "name": "Coleago Consulting Ltd",
+   "categories": {
+    "primary": "business_consulting",
+    "basic": "professional_service",
+    "hierarchy": [
+     "services_and_business",
+     "professional_service",
+     "business_consulting"
+    ],
+    "alternates": []
+   },
+   "address": {
+    "street": "77 ABBOTSBURY ROAD",
+    "locality": "LONDON",
+    "postcode": "W14 8EP",
+    "region": "WSM",
+    "country": "GB"
+   },
+   "location": {
+    "lon": -0.207295,
+    "lat": 51.502556
+   },
+   "websites": [
+    "http://www.coleago.com/"
+   ],
+   "phones": [
+    "447974356258"
+   ],
+   "confidence": 0.5,
+   "sources": [
+    {
+     "dataset": "BrightQuery",
+     "license": "CDLA-Permissive-2.0",
+     "update_time": "2026-10-14T15:26:05.933Z",
+     "record_id": "33364471169",
+     "properties": [
+      "record",
+      "operating_status"
+     ]
+    },
+    {
+     "dataset": "Overture",
+     "license": "CDLA-Permissive-2.0",
+     "update_time": "2026-10-15T18:00:21Z",
+     "record_id": null,
+     "properties": [
+      "confidence"
+     ]
+    }
+   ],
+   "attribution": "© Overture Maps Foundation. Sources: BrightQuery (CDLA-Permissive-2.0).",
+   "release": "2026-10-21.0",
+   "checked_at": "2026-11-15T12:00:00.000Z",
+   "linked_entity": null,
+   "possible_matches": [],
+   "official_register": {
+    "label": "Search the official register",
+    "register": "Companies House",
+    "tool": "search_companies",
+    "arguments": {
+     "query": "Coleago Consulting Ltd",
+     "country": "GB"
+    }
+   },
+   "link_note": "A link to COLEAGO CONSULTING LIMITED was reported as wrong and is held back until it is reviewed."
+  }
+ }
+}

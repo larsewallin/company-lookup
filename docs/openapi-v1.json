@@ -1,0 +1,1947 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Company Lookup API",
+    "version": "1",
+    "description": "Stable HTTP API for Company Lookup. The contract, with null and missing rules, is docs/api-v1.md. For information only: not advice, a credit rating or a credit report. Presence data (tier \"presence\") is not an official record.",
+    "license": {
+      "name": "MIT",
+      "identifier": "MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://open-company-lookup.vercel.app",
+      "description": "Hosted service"
+    }
+  ],
+  "security": [
+    {},
+    {
+      "bearer": []
+    },
+    {
+      "apiKey": []
+    }
+  ],
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "api_version": {
+            "type": "string",
+            "const": "1"
+          },
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "enum": [
+                  "bad_request",
+                  "not_found",
+                  "method_not_allowed",
+                  "rate_limited",
+                  "internal",
+                  "upstream_unavailable",
+                  "upstream_busy",
+                  "not_configured"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "retry_after": {
+                "type": "integer"
+              },
+              "flag": {
+                "type": "string"
+              },
+              "tier": {
+                "type": "string"
+              },
+              "notice": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "code",
+              "message"
+            ],
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "api_version",
+          "error"
+        ],
+        "additionalProperties": true
+      },
+      "PlaceSummary": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "tier": {
+            "type": "string",
+            "const": "presence"
+          },
+          "label": {
+            "type": "string"
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "address": {
+            "type": "object",
+            "properties": {
+              "street": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "locality": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "postcode": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "region": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "country": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "street",
+              "locality",
+              "postcode",
+              "region",
+              "country"
+            ],
+            "additionalProperties": true
+          },
+          "location": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "lon": {
+                "type": "number"
+              },
+              "lat": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "lon",
+              "lat"
+            ]
+          },
+          "category": {
+            "type": "string"
+          },
+          "websites": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "phones": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "dataset": {
+                  "type": "string"
+                },
+                "license": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "update_time": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "dataset",
+                "license",
+                "update_time"
+              ],
+              "additionalProperties": true
+            }
+          },
+          "release": {
+            "type": "string"
+          },
+          "match": {
+            "type": "object",
+            "properties": {
+              "level": {
+                "type": "string"
+              },
+              "evidence": {
+                "type": "object"
+              },
+              "linked_on": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "level",
+              "evidence",
+              "linked_on"
+            ],
+            "additionalProperties": true
+          },
+          "linked_entity": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "required": [
+          "id",
+          "tier",
+          "label",
+          "name",
+          "address",
+          "location"
+        ],
+        "additionalProperties": true
+      },
+      "SearchResult": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "tier": {
+            "type": "string",
+            "enum": [
+              "register",
+              "gleif"
+            ]
+          },
+          "source": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "country": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "status": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "number": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "city": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "address": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "incorporated": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "lei": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "fund"
+            ]
+          },
+          "ticker": {
+            "type": "string"
+          },
+          "locations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlaceSummary"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "tier",
+          "source",
+          "name",
+          "country"
+        ],
+        "additionalProperties": true
+      },
+      "SearchResponse": {
+        "type": "object",
+        "properties": {
+          "api_version": {
+            "type": "string",
+            "const": "1"
+          },
+          "query": {
+            "type": "string"
+          },
+          "country": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SearchResult"
+            }
+          },
+          "presence": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlaceSummary"
+            }
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "api_version",
+          "query",
+          "country",
+          "results",
+          "presence",
+          "warnings"
+        ],
+        "additionalProperties": true
+      },
+      "Flag": {
+        "type": "object",
+        "properties": {
+          "level": {
+            "type": "string",
+            "enum": [
+              "stop",
+              "check",
+              "note"
+            ]
+          },
+          "label": {
+            "type": "string"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "level",
+          "label",
+          "detail",
+          "source"
+        ],
+        "additionalProperties": true
+      },
+      "Party": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "lei": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "country": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "status": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "CompanyCard": {
+        "type": "object",
+        "properties": {
+          "api_version": {
+            "type": "string",
+            "const": "1"
+          },
+          "id": {
+            "type": "string"
+          },
+          "as_of": {
+            "type": "string"
+          },
+          "verdict": {
+            "type": "string",
+            "enum": [
+              "stop",
+              "check",
+              "clear"
+            ]
+          },
+          "flags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Flag"
+            }
+          },
+          "identity": {
+            "type": "object",
+            "properties": {
+              "legal_name": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "country": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "legal_form": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "status": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "status_detail": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "incorporated": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "incorporated_source": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "age": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "ceased": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "registered_address": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "hq_address": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "sic_codes": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "industry": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "other_names": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "employees": {},
+              "size": {},
+              "website": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "vat": {
+                "type": [
+                  "object",
+                  "null"
+                ]
+              },
+              "auditor": {},
+              "share_capital": {},
+              "extra": {
+                "type": "array"
+              },
+              "sole_trader": {
+                "type": "boolean"
+              },
+              "former_names": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "from": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "to": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "from",
+                    "to"
+                  ],
+                  "additionalProperties": true
+                }
+              },
+              "register": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "number": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "url": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                }
+              }
+            },
+            "required": [
+              "legal_name",
+              "country",
+              "status"
+            ],
+            "additionalProperties": true
+          },
+          "ids": {
+            "type": "object",
+            "properties": {
+              "lei": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "national": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "opencorporates": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "isins": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "lei",
+              "national",
+              "opencorporates",
+              "isins"
+            ],
+            "additionalProperties": true
+          },
+          "group": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "lei": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "direct_parent": {
+                "$ref": "#/components/schemas/Party"
+              },
+              "ultimate_parent": {
+                "$ref": "#/components/schemas/Party"
+              },
+              "no_parent_reason": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "subsidiaries": {
+                "type": [
+                  "object",
+                  "null"
+                ]
+              },
+              "all_subsidiaries_total": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "group_size": {}
+            }
+          },
+          "people": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "officers": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "role": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "appointed": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "additionalProperties": true
+                }
+              },
+              "owners": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "kind": {
+                      "type": "string"
+                    },
+                    "control": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "additionalProperties": true
+                }
+              },
+              "owners_note": {
+                "type": "string"
+              }
+            }
+          },
+          "filings": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "charges": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "web": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "domain": {
+                "type": "string"
+              },
+              "from": {
+                "type": "string"
+              },
+              "registered": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "age": {
+                "type": "string"
+              }
+            }
+          },
+          "financials": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "about": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "presence": {
+            "type": "object",
+            "properties": {
+              "notice": {
+                "type": "string"
+              },
+              "locations": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/PlaceSummary"
+                }
+              }
+            },
+            "required": [
+              "notice",
+              "locations"
+            ],
+            "additionalProperties": true
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "result": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "name",
+                "result"
+              ],
+              "additionalProperties": true
+            }
+          },
+          "gaps": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "next_step": {
+            "type": "string"
+          },
+          "rules": {
+            "type": "object",
+            "properties": {
+              "youngCompanyMonths": {
+                "type": "number"
+              },
+              "newDomainMonths": {
+                "type": "number"
+              },
+              "recentChangeMonths": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "youngCompanyMonths",
+              "newDomainMonths",
+              "recentChangeMonths"
+            ],
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "api_version",
+          "id",
+          "as_of",
+          "verdict",
+          "flags",
+          "identity",
+          "ids",
+          "sources",
+          "gaps",
+          "next_step",
+          "rules"
+        ],
+        "additionalProperties": true
+      },
+      "Link": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "register": {
+            "type": "string"
+          },
+          "number": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "strong",
+              "probable"
+            ]
+          },
+          "evidence": {
+            "type": "object"
+          },
+          "linked_on": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "report": {
+            "type": "object",
+            "properties": {
+              "method": {
+                "type": "string",
+                "const": "POST"
+              },
+              "url": {
+                "type": "string"
+              },
+              "body": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "entity_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "entity_id"
+                ],
+                "additionalProperties": true
+              }
+            },
+            "required": [
+              "method",
+              "url",
+              "body"
+            ],
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "register",
+          "number",
+          "level",
+          "evidence",
+          "linked_on",
+          "text",
+          "report"
+        ],
+        "additionalProperties": true
+      },
+      "PresenceCard": {
+        "type": "object",
+        "properties": {
+          "api_version": {
+            "type": "string",
+            "const": "1"
+          },
+          "tier": {
+            "type": "string",
+            "const": "presence"
+          },
+          "notice": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "categories": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "primary": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "basic": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "hierarchy": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "alternates": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "address": {
+            "type": "object",
+            "properties": {
+              "street": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "locality": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "postcode": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "region": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "country": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "street",
+              "locality",
+              "postcode",
+              "region",
+              "country"
+            ],
+            "additionalProperties": true
+          },
+          "location": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "lon": {
+                "type": "number"
+              },
+              "lat": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "lon",
+              "lat"
+            ]
+          },
+          "websites": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "phones": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "socials": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "brand": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "wikidata": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "name",
+              "wikidata"
+            ],
+            "additionalProperties": true
+          },
+          "confidence": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "dataset": {
+                  "type": "string"
+                },
+                "license": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "update_time": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "record_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "properties": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "dataset",
+                "license",
+                "update_time",
+                "record_id",
+                "properties"
+              ],
+              "additionalProperties": true
+            }
+          },
+          "attribution": {
+            "type": "string"
+          },
+          "release": {
+            "type": "string"
+          },
+          "checked_at": {
+            "type": "string"
+          },
+          "linked_entity": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Link"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "possible_matches": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Link"
+            }
+          },
+          "official_register": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "register": {
+                "type": "string"
+              },
+              "tool": {
+                "type": "string"
+              },
+              "arguments": {
+                "type": "object",
+                "properties": {
+                  "query": {
+                    "type": "string"
+                  },
+                  "country": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "query",
+                  "country"
+                ],
+                "additionalProperties": true
+              }
+            }
+          },
+          "link_note": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "api_version",
+          "tier",
+          "notice",
+          "id",
+          "name",
+          "categories",
+          "address",
+          "location",
+          "confidence",
+          "sources",
+          "attribution",
+          "release",
+          "checked_at",
+          "linked_entity",
+          "possible_matches",
+          "official_register"
+        ],
+        "additionalProperties": true
+      },
+      "ReportResponse": {
+        "type": "object",
+        "properties": {
+          "api_version": {
+            "type": "string",
+            "const": "1"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "string",
+            "const": "reported"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "api_version",
+          "ok",
+          "status",
+          "message"
+        ],
+        "additionalProperties": true
+      },
+      "Coverage": {
+        "type": "object",
+        "properties": {
+          "api_version": {
+            "type": "string",
+            "const": "1"
+          },
+          "as_of": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "api_version",
+          "as_of"
+        ],
+        "additionalProperties": true
+      },
+      "Health": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "degraded"
+            ]
+          },
+          "api_version": {
+            "type": "string",
+            "const": "1"
+          },
+          "version": {
+            "type": "string"
+          },
+          "commit": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "overture_release": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "blob": {
+            "type": "object",
+            "properties": {
+              "configured": {
+                "type": "boolean"
+              },
+              "reachable": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "configured",
+              "reachable"
+            ],
+            "additionalProperties": true
+          },
+          "sources": {
+            "type": "object",
+            "properties": {
+              "companies_house": {
+                "type": "string"
+              },
+              "overture": {
+                "type": "string"
+              },
+              "blob": {
+                "type": "string"
+              },
+              "registers": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "companies_house",
+              "overture",
+              "blob",
+              "registers"
+            ],
+            "additionalProperties": true
+          },
+          "checked_at": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "api_version",
+          "version",
+          "commit",
+          "overture_release",
+          "blob",
+          "sources",
+          "checked_at"
+        ],
+        "additionalProperties": true
+      }
+    },
+    "securitySchemes": {
+      "bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Optional API key for trusted server-to-server callers: higher rate limit."
+      },
+      "apiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Api-Key"
+      }
+    }
+  },
+  "paths": {
+    "/v1/search": {
+      "get": {
+        "operationId": "search",
+        "summary": "Find companies",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 100
+            },
+            "description": "Name, number, LEI, ISIN or ticker"
+          },
+          {
+            "name": "country",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z]{2}$"
+            },
+            "description": "ISO 3166-1 alpha-2"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Matches",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad_request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "method_not_allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "rate_limited (Retry-After header)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "upstream_unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/company": {
+      "get": {
+        "operationId": "company",
+        "summary": "Get a company card",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "e.g. gb:00445790, lei:…"
+          },
+          {
+            "name": "number",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "UK Companies House number, instead of id"
+          },
+          {
+            "name": "website",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 300
+            },
+            "description": "Website to check the domain age of"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The company card",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompanyCard"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad_request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "method_not_allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "rate_limited (Retry-After header)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "upstream_unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "upstream_busy or not_configured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/presence": {
+      "get": {
+        "operationId": "presence",
+        "summary": "Get a presence card (Overture Maps place)",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "GERS ID"
+          },
+          {
+            "name": "lon",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180
+            }
+          },
+          {
+            "name": "lat",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90
+            }
+          },
+          {
+            "name": "link",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "0"
+              ]
+            },
+            "description": "0 skips linking to legal entities"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The presence card",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PresenceCard"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad_request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "method_not_allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "rate_limited (Retry-After header)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "upstream_unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/presence-report": {
+      "post": {
+        "operationId": "presenceReport",
+        "summary": "Report a wrong link",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "entity_id": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "maxLength": 500
+                  }
+                },
+                "required": [
+                  "id",
+                  "entity_id"
+                ],
+                "additionalProperties": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Reported; held back until reviewed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad_request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "method_not_allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "rate_limited (Retry-After header)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "upstream_unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "upstream_busy or not_configured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/coverage": {
+      "get": {
+        "operationId": "coverage",
+        "summary": "Companies per source",
+        "responses": {
+          "200": {
+            "description": "Counts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Coverage"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "method_not_allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/health": {
+      "get": {
+        "operationId": "health",
+        "summary": "Service health",
+        "security": [
+          {}
+        ],
+        "responses": {
+          "200": {
+            "description": "Health; read status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "method_not_allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

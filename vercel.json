@@ -2,6 +2,12 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
   "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/v1/:path*",
+      "destination": "/api/v1/:path*"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
@@ -41,6 +47,24 @@
     },
     "api/presence.js": {
       "maxDuration": 30
+    },
+    "api/v1/search.js": {
+      "maxDuration": 30
+    },
+    "api/v1/company.js": {
+      "maxDuration": 30
+    },
+    "api/v1/presence.js": {
+      "maxDuration": 30
+    },
+    "api/v1/presence-report.js": {
+      "maxDuration": 30
+    },
+    "api/v1/health.js": {
+      "maxDuration": 30
+    },
+    "api/v1/coverage.js": {
+      "maxDuration": 60
     }
   },
   "crons": [
