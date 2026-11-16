@@ -186,7 +186,7 @@ The full company card for one id, from the national register (where one is conne
 | `verdict` | string | `stop`, `check` or `clear`: the most serious flag level. A prompt, not a decision. |
 | `flags` | array | `{ level, label, detail, source }`, all strings. `level` is `stop`, `check` or `note`; Stop first. `label` values are stable names, e.g. `Not active`, `Insolvency history`, `Accounts overdue`, `Young company`, `New website domain`. |
 | `identity` | object | See below. |
-| `ids` | object | `lei` (string, nullable), `national` (string, nullable), `opencorporates` (URL string, nullable), `isins` (array of string, nullable). |
+| `ids` | object | `lei` (string, nullable), `national` (string, nullable), `opencorporates` (URL string, nullable), `isins` (object `{ total: number, items: [string] }`, nullable: securities GLEIF links to the LEI). |
 | `group` | object, nullable | From GLEIF. `lei` (nullable) always; with an LEI also `direct_parent`, `ultimate_parent` (each `{ lei, name, country, status }` or null), `no_parent_reason` (string, nullable), `subsidiaries` (object, nullable), `all_subsidiaries_total` (number, nullable), `group_size` (nullable). |
 | `people` | object, nullable | `officers` (array of `{ name, role, appointed }`, nullable), `owners` (array of `{ name, kind, control }`, nullable), `owners_note` (string, optional). Only where the register publishes them. |
 | `filings` | object, nullable | Register-specific. UK: `last_accounts_made_up_to`, `last_accounts_type`, `next_accounts_due`, `next_confirmation_statement_due` (strings, nullable), `accounts_overdue`, `confirmation_statement_overdue` (booleans). Other registers can give e.g. `last_accounts_year`. |
