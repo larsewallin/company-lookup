@@ -36,11 +36,13 @@
   <p>Any client that supports remote MCP servers over Streamable HTTP can connect to the same address with no authentication.</p>
 
   <h2 id="tools">Tools</h2>
-  <p>Both tools only read public data. They change nothing and need no account.</p>
+  <p>All four tools only read public data. They change nothing and need no account.</p>
   <table>
     <tr><th>Tool</th><th>What it does</th></tr>
     <tr><td><code>search_companies</code></td><td>Finds companies by name, registration number, LEI, ISIN or stock ticker. Adding a two-letter country code (for example GB, FR, US) also searches that country's national register. Returns up to 20 matches, each with an id.</td></tr>
-    <tr><td><code>get_company_card</code></td><td>Returns the full company card for one id from the search. You can add the company's website to check how old its domain is.</td></tr>
+    <tr><td><code>get_company_card</code></td><td>Returns the full company card for one id from the search. You can add the company's website to check how old its domain is. The card includes a sanctions screening of the company and its parents.</td></tr>
+    <tr><td><code>screen_sanctions</code></td><td>Screens one or up to 50 company names against the US OFAC, EU, UN and UK sanctions lists, refreshed daily. Companies only, not individuals. A match is a possible match to review, never a finding that a company is sanctioned.</td></tr>
+    <tr><td><code>get_presence_card</code></td><td>Returns one place from Overture Maps (presence data: not an official record), with its sources and licences.</td></tr>
   </table>
 
   <h2 id="examples">Things to ask</h2>
@@ -49,11 +51,12 @@
     <li>"Who is the ultimate parent of LEI 5493001KJTIIGC8Y1R12?"</li>
     <li>"A new customer says it's Acme Trading SAS, website acme-trading.fr. Does that check out?"</li>
     <li>"Check these three suppliers and tell me which ones need a closer look."</li>
+    <li>"Screen these customers against sanctions lists: …"</li>
   </ul>
 
   <h2 id="flags">Reading the card</h2>
   <ul>
-    <li><strong>Stop:</strong> something serious on the record, such as dissolved, struck off, insolvent or in liquidation.</li>
+    <li><strong>Stop:</strong> something serious on the record, such as dissolved, struck off, insolvent or in liquidation, or the same name on a sanctions list (to review: a shared name is not proof).</li>
     <li><strong>Check:</strong> worth a closer look, such as overdue filings, a very young company, a recently created website domain or a parent company that is not active.</li>
     <li><strong>Note:</strong> useful context, such as a parent company that is not disclosed.</li>
   </ul>
@@ -85,6 +88,10 @@
     <tr><td>India, MCA registrations (India Data Portal)</td><td>ODC-By</td></tr>
     <tr><td>Estonia, e-Business Register (RIK)</td><td>RIK open data terms</td></tr>
     <tr><td>France (INSEE SIRENE, RNE), Czechia (ARES), Slovakia (RPO), Latvia (UR), Poland (KRS), Switzerland (Zefix/LINDAS), Ireland (CRO), Israel, Singapore (ACRA), Hong Kong (Companies Registry), Australia (ASIC), New Caledonia (RIDET), Slovenia (AJPES), Romania (ONRC), Luxembourg (LBR/STATEC), Moldova (ASP), Ukraine, Russia (FNS open data), Canada (Corporations Canada, Quebec Registraire), Argentina, Chile, Colombia (RUES), Peru (SUNAT), Dominican Republic (DGII), Ecuador (SRI), Paraguay (DNIT), Brazil (Receita Federal CNPJ via BrasilAPI), US (SEC EDGAR; New York, Colorado, Connecticut, Texas, Oregon and Pennsylvania state data)</td><td>Official open data or public registers, under each publisher's own terms</td></tr>
+    <tr><td>US OFAC SDN and Consolidated sanctions lists</td><td>Public domain (US Government)</td></tr>
+    <tr><td>EU consolidated financial sanctions list</td><td>Reuse under Commission Decision 2011/833/EU</td></tr>
+    <tr><td>UN Security Council consolidated list</td><td>Official public list</td></tr>
+    <tr><td>UK Sanctions List (FCDO)</td><td>Open Government Licence v3.0</td></tr>
     <tr><td>EU VAT check (VIES), European Commission</td><td>Used to check a company's VAT number, under the VIES terms</td></tr>
     <tr><td>Domain records (RDAP)</td><td>Public registry data</td></tr>
   </table>

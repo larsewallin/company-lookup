@@ -68,6 +68,9 @@
     },
     "api/places-import.js": {
       "maxDuration": 300
+    },
+    "api/sanctions-import.js": {
+      "maxDuration": 300
     }
   },
   "crons": [
@@ -134,6 +137,10 @@
     {
       "path": "/api/bulk-import?country=LU",
       "schedule": "21 13 2 * *"
+    },
+    {
+      "path": "/api/sanctions-import",
+      "schedule": "19 6 * * *"
     }
   ]
 }

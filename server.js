@@ -21,6 +21,8 @@ const ROUTES = {
   '/api/mcp': () => require('./api/mcp'),
   '/api/presence': () => require('./api/presence'),
   '/api/presence-report': () => require('./api/presence-report'),
+  '/api/sanctions': () => require('./api/sanctions'),
+  '/api/sanctions-import': () => require('./api/sanctions-import'),
   '/api/bulk-import': () => require('./api/bulk-import'),
   '/api/places-import': () => require('./api/places-import'),
   // Stable v1 routes (docs/api-v1.md): the same handlers with the v1 contract.
@@ -29,6 +31,7 @@ const ROUTES = {
   '/v1/presence': () => require('./api/v1/presence'),
   '/v1/presence-report': () => require('./api/v1/presence-report'),
   '/v1/coverage': () => require('./api/v1/coverage'),
+  '/v1/sanctions': () => require('./api/v1/sanctions'),
   '/v1/health': () => require('./api/v1/health'),
 };
 

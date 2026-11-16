@@ -42,6 +42,10 @@ console.log(card.flags.map((f) => `${f.level}: ${f.label}`));
 // Presence data: one Overture Maps place by its GERS ID (lon/lat optional, faster)
 const place = await lookup.presence('6f8bce4f-a274-4494-9f2c-dd051bca0bb4', { lon: -0.20729, lat: 51.50255 });
 console.log(place.tier, place.notice, place.linked_entity);
+
+// Sanctions screening (OFAC, EU, UN, UK; entities only). Needs the daily index in a Blob store.
+const { results: screened } = await lookup.sanctions([{ name: 'Acme Trading Ltd', country: 'GB' }]);
+console.log(screened[0].result); // 'no_match' | 'possible_match'
 ```
 
 Install it straight from GitHub with `npm install github:larsewallin/company-lookup`, or copy the folder into your project. Errors are thrown as `LookupError` with an HTTP-style `status` and a readable message.
@@ -58,6 +62,7 @@ Run `node server.js`, or deploy the repo to Vercel as it is (the `api/` folder b
 | `GET /v1/company?id=gb:00445790&website=tesco.com` | The full company card |
 | `GET /v1/presence?id=<GERS ID>&lon=-0.20729&lat=51.50255` | Presence card for one Overture Maps place (`lon`/`lat` optional) |
 | `POST /v1/presence-report` | Report a wrong link: JSON `{ "id": "<GERS ID>", "entity_id": "gb:…", "reason": "…" }` |
+| `GET /v1/sanctions?name=Acme%20Ltd&country=GB` (or `POST` up to 50 names) | Screen company names against the OFAC, EU, UN and UK sanctions lists |
 | `GET /v1/coverage` | How many companies each source holds |
 | `GET /v1/health` | Status, version, Overture release and Blob store reachability (cheap, cached 10 s) |
 
@@ -82,7 +87,7 @@ Country codes are ISO 3166-1 alpha-2. Giving a country adds that country's natio
 
 ### As an MCP server for AI assistants
 
-`/api/mcp` is a remote MCP server (Streamable HTTP, no sign-in) with three read-only tools: `search_companies`, `get_company_card` and `get_presence_card`. Add its URL as a custom connector in Claude or ChatGPT, or in any MCP client. A hosted copy runs at `https://open-company-lookup.vercel.app/api/mcp`.
+`/api/mcp` is a remote MCP server (Streamable HTTP, no sign-in) with four read-only tools: `search_companies`, `get_company_card`, `get_presence_card` and `screen_sanctions`. Add its URL as a custom connector in Claude or ChatGPT, or in any MCP client. A hosted copy runs at `https://open-company-lookup.vercel.app/api/mcp`.
 
 ## The company card
 
@@ -98,6 +103,7 @@ charges     secured lending (UK)
 web         domain and when it was registered
 financials  key figures, where a register publishes them
 about       Wikidata: headquarters, industry, employees, listings
+sanctions   screening of the company's names and its parents (OFAC, EU, UN, UK)
 sources     every source checked, with its result
 gaps        what could not be checked, and why
 next_step   a suggested next step
@@ -107,6 +113,7 @@ rules       the thresholds the flags used
 
 **Flags** come from fixed, written rules in `lib/card.js`:
 - **Stop:** something serious on the record, such as dissolved, struck off, insolvent or in liquidation.
+- **Sanctions:** a possible match on a sanctions list is Stop when it is the same name and not listed in another country, Check when it is listed elsewhere, a strong match or a parent, and Note when it is only similar. It is always worded as a review, never as a finding.
 - **Check:** worth a closer look, such as overdue accounts, a company younger than 24 months, a website domain registered in the last 12 months, a recent name change, an invalid VAT number or a parent that is not active.
 - **Note:** context, such as a lapsed LEI or a parent that is not disclosed.
 
@@ -212,6 +219,7 @@ lib/wikidata.js     Wikidata enrichment and stock tickers
 lib/overture.js     Overture Maps reader (STAC release, GERS registry, GeoParquet range reads)
 lib/presence.js     presence card, name and domain normalisation, match rules
 lib/presence-store.js links between places and legal entities (Blob store)
+lib/sanctions.js    sanctions lists: parsers (OFAC, EU, UN, UK), index, name matching
 lib/mcp.js          MCP server
 lib/keys.js         API keys for /v1/ (hashed, constant-time compare)
 api/                Vercel functions (also served by server.js); api/v1/ serves /v1/ (vercel.json rewrites)
@@ -222,6 +230,25 @@ tests/              offline tests with fixtures from real responses
 ```
 
 Run the tests with `npm test`. They are offline and need no network.
+
+## Sanctions screening
+
+Company names are screened against four official lists, downloaded once a day by `/api/sanctions-import` (Vercel Cron, 06:19 UTC) into one index in the Blob store (`sanctions/index.json`):
+
+| List | Source | Licence |
+|---|---|---|
+| US OFAC SDN list and Consolidated (non-SDN) list | sanctionslistservice.ofac.treas.gov (CSV) | Public domain |
+| EU consolidated financial sanctions list | webgate.ec.europa.eu FSF (CSV) | Reuse under Commission Decision 2011/833/EU |
+| UN Security Council consolidated list | scsanctions.un.org (XML) | Official public list |
+| UK Sanctions List (the only UK list since 28 January 2026) | sanctionslist.fcdo.gov.uk (CSV) | Open Government Licence v3.0 |
+
+How screening works:
+- **Entities only:** individuals are left out of the index.
+- **Names are normalised first:** case, accents and legal forms (Ltd, GmbH, JSC, "open joint-stock company") are ignored.
+- **Match levels:** `exact`, `strong` (nearly all words) or `possible` (spelling variants). A single distinctive word ("Rosneft") matches only a list name made of that word plus common words. A name made only of common words ("Global Trading") is at most `possible`.
+- **Failed downloads:** a list that fails to download keeps its previous entries, and the result says from when.
+
+A match is a prompt to review on other details, never a finding that a company is sanctioned. This is not a compliance system.
 
 ## Data sources and licences
 
