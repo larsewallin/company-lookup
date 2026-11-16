@@ -121,7 +121,7 @@ Up to 20 legal entities matching a name, registration number, LEI, ISIN or stock
 | `query` | string | The query, trimmed. |
 | `country` | string, nullable | The country asked for. |
 | `results` | array of [search result](#search-result) | Up to 20. Can be empty. |
-| `presence` | array of [place summary](#place-summary) | Up to 10 known places not linked to any result. Can be empty. |
+| `presence` | array of [place summary](#place-summary) | Up to 10 known places not linked to any result: places looked up before and, when `country` is DE, IT, ES, NL, BE or AT, matching places from the stored Overture extract (pilot). Can be empty. |
 | `warnings` | array of string | Sources that could not be reached, so results may be incomplete. Empty when all went well. |
 
 ### Search result
@@ -310,6 +310,7 @@ Whether the service is up. Cheap: no register calls; cached for 10 seconds. Alwa
 | `overture_release` | string, nullable | The Overture release in use. |
 | `blob` | object | `configured` (boolean), `reachable` (boolean, nullable when not configured). |
 | `sources` | object | `companies_house` (`configured` or `not_configured`), `overture` (`ok` or `unreachable`), `blob` (`ok`, `unreachable` or `not_configured`), `registers` (number of national register adapters). Registers are not called; their live state shows in search `warnings` and card `gaps`. |
+| `places` | object, nullable | Stored Overture place indexes for name search (pilot): per country code, `{ release, count, built_at }` or `null` if not built. `null` when no Blob store is set up. |
 | `checked_at` | string | When this answer was worked out. |
 
 ## Example

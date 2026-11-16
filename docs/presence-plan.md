@@ -1,6 +1,6 @@
 # Presence data from Overture Maps: plan and phase 3 proposal
 
-Status, 15 Nov 2026: phases 1 and 2 are built. Phase 3 is a proposal and needs a decision.
+Status, 16 Nov 2026: phases 1 and 2 are built. Phase 3 is being piloted (decided 16 Nov: Europe pilot on option A, Vercel Blob, spend limit $10 a month): DE, IT, ES, NL, BE and AT. See [Phase 3 pilot: as built](#phase-3-pilot-as-built) at the end.
 
 ## How it fits the existing code
 
@@ -99,3 +99,15 @@ Check current Vercel Blob and Supabase pricing before deciding. These figures ar
 The expected run time is 15–30 minutes.
 
 **Suggested first step.** A Europe pilot on option A for DE, IT, ES, NL, BE and AT, about 15 M places before category filtering. Measure search quality against the probable-match rules. Then decide on the rest of the world, and on whether fuzzy search (option B) is worth the cost.
+
+## Phase 3 pilot: as built
+
+- **Countries:** DE, IT, ES, NL, BE, AT (`PILOT` in `lib/places.js`). Release 2026-10-21.0 has 13.7 M places there before filtering (DE 4.87 M, IT 3.76 M, ES 2.45 M, NL 1.30 M, BE 0.79 M, AT 0.57 M).
+- **Kept:** places with a name, not `permanently_closed`, outside the `geographic_entities` and `cultural_and_historic` top-level categories. In a Hamburg sample, about 4% were permanently closed and about 1% were in the dropped categories.
+- **Extract:** `scripts/places/extract.sql` (DuckDB on a GitHub Actions runner, reading Overture's public S3 GeoParquet; no keys).
+- **Index:** the hosted-register word index (`lib/bulk/index.js`) with a place row: GERS ID, name, category, address, point, confidence, and source datasets with licences. Search matches whole words by prefix, accents ignored. Files live under `places/<cc>/<version>/` in the Blob store, with `places/<cc>/manifest.json`.
+- **Getting it into Blob without a token:** `.github/workflows/places-monthly.yml` (26th of each month, after Overture's release) attaches the packs to a GitHub release (`places-<release>`). `POST /api/places-import` then copies each pack into Blob with the site's own OIDC sign-in and switches the manifest. Finalising refuses until every file is in, and refuses a build with under 80% of the live count. Older releases and versions are removed.
+- **Search:** with `country` set to a pilot country, `search` adds matching stored places to the `presence` list (after linked places, up to 10, labelled "Not an official record", `linked_entity: null`). They never appear in `results`, and a slow or missing index never breaks search (4 s limit).
+- **Health:** `/v1/health` shows `places`: per country `{ release, count, built_at }`, or `null` when not built.
+- **Cost (Vercel Pro, checked 16 Nov 2026):** storage $0.023 per GB-month, writes $5 per million. The pilot is about 5 GB and some thousands of writes a month: well under $1 a month.
+- **Not yet:** fuzzy matching (option B), other countries, and linking stored places to legal entities before someone opens their presence card.

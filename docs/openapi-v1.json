@@ -1408,6 +1408,35 @@
           },
           "checked_at": {
             "type": "string"
+          },
+          "places": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "properties": {
+                "release": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "count": {
+                  "type": "integer"
+                },
+                "built_at": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            }
           }
         },
         "required": [
