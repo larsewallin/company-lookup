@@ -148,7 +148,7 @@ A presence card has no verdict, flags or status. The current release is read fro
 
 In search, legal entities come first; places linked to one of them appear under it as `locations`, and other known places follow in a separate `presence` array, each labelled "Not an official record". A company card can carry `presence.locations`. Anyone can report a wrong link with `POST /api/presence-report`; it is held out until reviewed (to review, edit `presence/index.json` in the Blob store: set the link's `status` back to `active`, or remove it and add the entity ID to `rejected`).
 
-Name search over all Overture places is not built yet: search only shows places that have been looked up before. See [docs/presence-plan.md](docs/presence-plan.md).
+Name search over stored Overture places is being piloted in Germany, Italy, Spain, the Netherlands, Belgium and Austria: with `country` set to one of these, search's `presence` list also includes matching places from a monthly extract (`lib/places.js`, built by `.github/workflows/places-monthly.yml` and loaded with `POST /api/places-import`). Elsewhere, search shows only places that have been looked up before. See [docs/presence-plan.md](docs/presence-plan.md).
 
 ## Configuration
 

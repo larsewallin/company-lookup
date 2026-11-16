@@ -2,6 +2,10 @@
 
 Changes to the HTTP API, the MCP server and the library. The `/v1/` contract is in [docs/api-v1.md](docs/api-v1.md): within v1, fields are only added. A breaking change means `/v2/`, announced here and in the README at least 6 months before v1 stops.
 
+## 2026-11-16: name search over stored places (pilot)
+
+- In DE, IT, ES, NL, BE and AT, search's `presence` list also includes matching Overture places from a monthly extract (labelled "Not an official record", `linked_entity: null`). `/v1/health` gains `places`. New `POST /api/places-import` (internal: loads the monthly index into Blob).
+
 ## 2026-11-16: VIES results trimmed
 
 - `identity.vat.vies.name` is now always `null` (the field stays), and `identity.vat.vies.url` links to the VIES check. Company Lookup no longer passes on the name or address VIES returns, because the VIES terms limit retransmitting its results. Validity and the date checked are unchanged.

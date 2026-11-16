@@ -65,6 +65,9 @@
     },
     "api/v1/coverage.js": {
       "maxDuration": 60
+    },
+    "api/places-import.js": {
+      "maxDuration": 300
     }
   },
   "crons": [
