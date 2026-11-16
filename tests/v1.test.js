@@ -66,7 +66,7 @@ test('regression: the MCP server and library are unaffected', async () => {
   const res = S.mockRes();
   await mcp.handler({ method: 'POST', headers: { 'content-type': 'application/json', accept: 'application/json, text/event-stream' }, body: { jsonrpc: '2.0', id: 1, method: 'tools/list' }, socket: {} }, res);
   const names = res.body.result.tools.map((t) => t.name);
-  assert.deepEqual(names, ['search_companies', 'get_company_card', 'get_presence_card']);
+  assert.deepEqual(names, ['search_companies', 'get_company_card', 'get_presence_card', 'screen_sanctions']);
   const { createLookup } = require('../lib/index');
   const lookup = createLookup(S.deps());
   const card = await lookup.company('gb:01234567');

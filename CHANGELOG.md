@@ -2,6 +2,11 @@
 
 Changes to the HTTP API, the MCP server and the library. The `/v1/` contract is in [docs/api-v1.md](docs/api-v1.md): within v1, fields are only added. A breaking change means `/v2/`, announced here and in the README at least 6 months before v1 stops.
 
+## 2026-11-16: sanctions screening
+
+- **New:** `GET`/`POST /v1/sanctions` and `/api/sanctions`, the MCP tool `screen_sanctions` and `lookup.sanctions()`. They screen company names against the US OFAC (SDN and non-SDN), EU, UN and UK sanctions lists, entities only, refreshed daily by `/api/sanctions-import` (Vercel Cron).
+- **New on company cards:** `sanctions` (screening of the company's names and its parents), a `sources` line, and the flags `Possible sanctions match: review` (Stop or Check), `Similar name on a sanctions list` (Note) and `Parent company: possible sanctions match` (Check). A match is a prompt to review, never a finding.
+
 ## 2026-11-16: name search over stored places (pilot)
 
 - In DE, IT, ES, NL, BE and AT, search's `presence` list also includes matching Overture places from a monthly extract (labelled "Not an official record", `linked_entity: null`). `/v1/health` gains `places`. New `POST /api/places-import` (internal: loads the monthly index into Blob).

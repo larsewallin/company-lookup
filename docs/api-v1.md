@@ -13,6 +13,7 @@ The stable API for applications that depend on Company Lookup. Machine-readable 
 | [`GET /v1/company`](#get-v1company) | One company card |
 | [`GET /v1/presence`](#get-v1presence) | One presence card (an Overture Maps place) |
 | [`POST /v1/presence-report`](#post-v1presence-report) | Report a wrong link between a place and a company |
+| [`GET`/`POST /v1/sanctions`](#get-v1sanctions) | Screen company names against the OFAC, EU, UN and UK sanctions lists |
 | [`GET /v1/coverage`](#get-v1coverage) | How many companies each source holds |
 | [`GET /v1/health`](#get-v1health) | Whether the service is up |
 
@@ -184,7 +185,7 @@ The full company card for one id, from the national register (where one is conne
 | `id` | string | The card's canonical id. |
 | `as_of` | string | Date of the check. |
 | `verdict` | string | `stop`, `check` or `clear`: the most serious flag level. A prompt, not a decision. |
-| `flags` | array | `{ level, label, detail, source }`, all strings. `level` is `stop`, `check` or `note`; Stop first. `label` values are stable names, e.g. `Not active`, `Insolvency history`, `Accounts overdue`, `Young company`, `New website domain`. |
+| `flags` | array | `{ level, label, detail, source }`, all strings. `level` is `stop`, `check` or `note`; Stop first. `label` values are stable names, e.g. `Not active`, `Insolvency history`, `Accounts overdue`, `Young company`, `New website domain`, `Possible sanctions match: review`, `Parent company: possible sanctions match`, `Similar name on a sanctions list`. |
 | `identity` | object | See below. |
 | `ids` | object | `lei` (string, nullable), `national` (string, nullable), `opencorporates` (URL string, nullable), `isins` (object `{ total: number, items: [string] }`, nullable: securities GLEIF links to the LEI). |
 | `group` | object, nullable | From GLEIF. `lei` (nullable) always; with an LEI also `direct_parent`, `ultimate_parent` (each `{ lei, name, country, status }` or null), `no_parent_reason` (string, nullable), `subsidiaries` (object, nullable), `all_subsidiaries_total` (number, nullable), `group_size` (nullable). |
@@ -194,6 +195,7 @@ The full company card for one id, from the national register (where one is conne
 | `web` | object, nullable | `domain` (string), `from` (`entered`, `register` or `Wikidata`), `registered` (date, nullable), `age` (string, optional). |
 | `financials` | object, nullable | Key figures, where a register publishes them. Register-specific. |
 | `about` | object, nullable | Wikidata: `wikipedia`, `founded`, `hq`, `industries`, `employees`, `listings`, `parents`, `subsidiaries`, `website`. |
+| `sanctions` | object, optional | Present where this deployment has a sanctions index: see [sanctions on the card](#sanctions-on-the-card). |
 | `presence` | object, optional | Only when places are linked: `notice` (string) and `locations` (array of [place summary](#place-summary), up to 25). Never replaces register facts. |
 | `sources` | array | `{ name, result, url }` for every source checked. `url` nullable. |
 | `gaps` | array of string | What could not be checked, and why. |
@@ -286,6 +288,53 @@ Reports a link between a place and a company as wrong. The link is held back fro
 **Response:** `api_version`, `ok` (boolean, `true`), `status` (`reported`), `message` (string).
 
 **Errors:** `bad_request`, `not_found` (no such link), `not_configured` (no link store on this deployment), `upstream_unavailable` (the store could not be written), `rate_limited`.
+
+## GET /v1/sanctions
+
+Screens company names against four official public lists, refreshed daily: the US OFAC SDN list and Consolidated (non-SDN) list, the EU consolidated financial sanctions list, the UN Security Council consolidated list and the UK Sanctions List. **Entities only:** individuals are not in the index.
+
+**A match is a prompt to review, never a finding that a company is sanctioned.** Similar and identical names are common. Confirm identity on the address, registration number and owners against the listing. This is not a compliance system.
+
+**Parameters**
+
+- `GET /v1/sanctions?name=<company name>&country=<ISO code, optional>` screens one name.
+- `POST /v1/sanctions` with `{ "names": [{ "name": "...", "country": "GB" }] }` screens up to 50 names. A plain string can stand in for `{ name }`.
+
+`country` doesn't filter. It puts matches listed in the same country first and fills `same_country`.
+
+**Response**
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `api_version` | string | `"1"` |
+| `notice` | string | The wording above. Show it with results. |
+| `checked_at` | string | When the index was built (UTC). |
+| `entities_only` | boolean | `true` |
+| `lists` | array | One per list: `{ list, name, entities, fetched_at, licence, search, error? }`. `list` is `ofac_sdn`, `ofac_cons`, `eu`, `un` or `uk`. `error` (optional) means the last download failed, and the entries shown are from the date in `fetched_at`. |
+| `results` | array | One per name, in order: `{ name, country, normalised, result, matches }`. `result` is `possible_match` or `no_match`. |
+
+**A match** (`matches[]`, up to 10, best first): `{ level, score, list, list_name, id, name, matched_name, programmes, countries, listed_on, url, same_country }`.
+- `level`:
+  - `exact` means the same name once legal forms are removed (Ltd, JSC, "open joint-stock company").
+  - `strong` means nearly all words match.
+  - `possible` means a spelling variant, or a name built only from common words.
+- `matched_name` is the listed name or alias that matched.
+- `same_country` is `null` when the listing gives no country.
+
+**Errors:** `bad_request` (no name, more than 50), `method_not_allowed`, `not_configured` (no Blob store on this deployment), `upstream_unavailable` (the index is not built yet), `rate_limited`.
+
+### Sanctions on the card
+
+`GET /v1/company` screens the company's legal name, other and former names, and its direct and ultimate parents, and adds:
+- `sanctions`: `{ state, notice, checked_at, names_screened: [{ name, role }], lists, matches }`.
+  - `state` is `ok` or `unavailable`.
+  - Each match also carries `screened` (the name screened) and `role` (`company`, `other name`, `former name` or `parent`).
+- One flag at most for the company:
+  - **Stop** `Possible sanctions match: review`, for an exact match on its own names that isn't listed in another country.
+  - **Check** with the same label, for an exact match listed in another country, or a strong match.
+  - **Note** `Similar name on a sanctions list`, for a possible match.
+- **Check** `Parent company: possible sanctions match`, for a strong or exact match on a parent.
+- A `sources` line, and a `gaps` line for any list that could not be refreshed.
 
 ## GET /v1/coverage
 

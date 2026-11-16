@@ -1,0 +1,6 @@
+﻿fileGenerationDate;Entity_LogicalId;Entity_EU_ReferenceNumber;Entity_UnitedNationId;Entity_DesignationDate;Entity_DesignationDetails;Entity_Remark;Entity_SubjectType;Entity_SubjectType_ClassificationCode;Entity_Regulation_Type;Entity_Regulation_OrganisationType;Entity_Regulation_PublicationDate;Entity_Regulation_EntryIntoForceDate;Entity_Regulation_NumberTitle;Entity_Regulation_Programme;Entity_Regulation_PublicationUrl;NameAlias_LastName;NameAlias_FirstName;NameAlias_MiddleName;NameAlias_WholeName;Address_CountryIso2Code;Citizenship_CountryIso2Code
+2026-11-16;144500;;;2022-10-06;;"Address; Moscow
+second line";E;enterprise;;;;;2022/1906 (OJ L259 I);UKR;https://eur-lex.europa.eu/x;;;;JSC Goznak;RU;
+2026-11-16;144500;;;;;;E;enterprise;;;;;;UKR;;;;;АО «Гознак»;;
+2026-11-16;13;;;;;;P;person;;;;;;;;;;;Saddam Hussein Al-Tikriti;;
+2026-11-16;201;;;2002-06-18;;;E;enterprise;;;;;;TERR;;;;;Abu Nidal Organisation;;
