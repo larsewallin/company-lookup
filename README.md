@@ -50,6 +50,25 @@ Install it straight from GitHub with `npm install github:larsewallin/company-loo
 
 Run `node server.js`, or deploy the repo to Vercel as it is (the `api/` folder becomes serverless functions).
 
+**`/v1/` is the stable path for new integrations.** Its contract is in [docs/api-v1.md](docs/api-v1.md) ([OpenAPI](docs/openapi-v1.json)): within v1, fields are only added, never renamed or removed, and a breaking change means a new `/v2/`, with v1 kept running for at least 6 months after it is announced here and in the [changelog](CHANGELOG.md). Every v1 response has `"api_version": "1"`, and errors have one shape: `{ "api_version": "1", "error": { "code", "message" } }`.
+
+| v1 route | What it does |
+|---|---|
+| `GET /v1/search?q=Tesco&country=GB` | Up to 20 matches, each with an `id` and a `tier`; known places in `presence` |
+| `GET /v1/company?id=gb:00445790&website=tesco.com` | The full company card |
+| `GET /v1/presence?id=<GERS ID>&lon=-0.20729&lat=51.50255` | Presence card for one Overture Maps place (`lon`/`lat` optional) |
+| `POST /v1/presence-report` | Report a wrong link: JSON `{ "id": "<GERS ID>", "entity_id": "gb:…", "reason": "…" }` |
+| `GET /v1/coverage` | How many companies each source holds |
+| `GET /v1/health` | Status, version, Overture release and Blob store reachability (cheap, cached 10 s) |
+
+```bash
+curl -s "https://open-company-lookup.vercel.app/v1/search?q=Tesco&country=GB"
+```
+
+Anonymous callers get 40 requests per 5 minutes per IP address. Trusted server-to-server callers can send an API key (`Authorization: Bearer <key>` or `X-Api-Key: <key>`) for their own, higher limit (400 per 5 minutes by default); see [API keys](#api-keys). A missing or unknown key is simply treated as anonymous.
+
+The original routes keep working exactly as before (no `api_version`, errors as `{ "error": "message" }`):
+
 | Route | What it does |
 |---|---|
 | `GET /api/search?q=Tesco&country=GB` | Up to 20 matches, each with an `id` |
@@ -142,6 +161,20 @@ Every setting is optional. Put them in `.env` (read by `server.js`) or in your h
 | `DATA_GOV_SG_API_KEY` | Optional higher rate limits for Singapore. |
 | `BLOB_STORE_ID` or `BLOB_READ_WRITE_TOKEN` | Your Vercel Blob store, for the hosted-index countries. On Vercel, connecting the store sets `BLOB_STORE_ID` and the code signs in with Vercel's short-lived OIDC token. Outside Vercel (e.g. `node server.js`), use a read-write token. |
 | `SEC_USER_AGENT` | Overrides the User-Agent for SEC EDGAR only. |
+| `COMPANY_LOOKUP_API_KEYS` | API keys for trusted callers of `/v1/`: `name:sha256hash` pairs separated by commas, e.g. `trade-credit-monitor:3f1c…,other-app:9ab2…`. Only hashes, never raw keys. Make them with `node scripts/new-api-key.js <name>`; see [API keys](#api-keys). Without it, every caller is anonymous. |
+| `COMPANY_LOOKUP_KEY_RATE_LIMIT` | Requests per 5 minutes for each keyed caller. Default 400 (10× the anonymous limit). |
+| `COMPANY_LOOKUP_PUBLIC_URL` | The base URL for links the v1 API returns, e.g. `https://lookup.example.com`. Default: the address the request came to. |
+
+### API keys
+
+Keys are for trusted **server-to-server** callers (never put one in a web page or app). A key gives its own, higher rate limit and the caller's name in logs; it unlocks no extra data, and reports sent with it are labelled with the name.
+
+1. Run `node scripts/new-api-key.js trade-credit-monitor` (any name: letters, digits, `.`, `_`, `-`).
+2. It prints the key and a `name:hash` line. Give the key to the caller, who keeps it in their own environment variables (e.g. `COMPANY_LOOKUP_API_KEY`), marked sensitive.
+3. Add the `name:hash` line to `COMPANY_LOOKUP_API_KEYS` (comma-separated with any others), then redeploy or restart.
+4. To revoke a key, remove its line and redeploy.
+
+Never commit a key, log it, or paste it into chat or tickets. Only the hash goes into Company Lookup's settings, so a leaked settings page doesn't leak keys.
 
 ### Getting a Companies House key
 
@@ -180,7 +213,10 @@ lib/overture.js     Overture Maps reader (STAC release, GERS registry, GeoParque
 lib/presence.js     presence card, name and domain normalisation, match rules
 lib/presence-store.js links between places and legal entities (Blob store)
 lib/mcp.js          MCP server
-api/                Vercel functions (also served by server.js)
+lib/keys.js         API keys for /v1/ (hashed, constant-time compare)
+api/                Vercel functions (also served by server.js); api/v1/ serves /v1/ (vercel.json rewrites)
+scripts/            new-api-key.js
+docs/               api-v1.md (the v1 contract), openapi-v1.json, presence-plan.md
 index.html          the demo page
 tests/              offline tests with fixtures from real responses
 ```
@@ -189,7 +225,7 @@ Run the tests with `npm test`. They are offline and need no network.
 
 ## Data sources and licences
 
-Company Lookup only reads public sources, and each card names the source of every fact. When you reuse the data, follow each publisher's terms. Among them: GLEIF and Wikidata (CC0), UK Companies House (Open Government Licence v3.0), Finland PRH (CC BY 4.0), Norway Brønnøysund (NLOD), Taiwan GCIS (Open Government Data License 1.0), Cyprus (CC BY 4.0) and India Data Portal (ODC-By). Overture Maps places carry a licence per record in `sources[].license`: mostly CDLA Permissive 2.0, Apache 2.0 for Foursquare-sourced records and CC0 for some (such as AllThePlaces); show "© Overture Maps Foundation" with the source dataset and licence, as the presence card's `attribution` does. The EU VAT check (VIES) is meant for checking your own trading partners. Respect each source's rate limits; the HTTP API has a per-address limit built in.
+Company Lookup only reads public sources, and each card names the source of every fact. When you reuse the data, follow each publisher's terms. Among them: GLEIF and Wikidata (CC0), UK Companies House (Open Government Licence v3.0), Finland PRH (CC BY 4.0), Norway Brønnøysund (NLOD), Taiwan GCIS (Open Government Data License 1.0), Cyprus (CC BY 4.0) and India Data Portal (ODC-By). Overture Maps places carry a licence per record in `sources[].license`: mostly CDLA Permissive 2.0, Apache 2.0 for Foursquare-sourced records and CC0 for some (such as AllThePlaces); show "© Overture Maps Foundation" with the source dataset and licence, as the presence card's `attribution` does. The EU VAT check (VIES) is meant for checking your own trading partners. Respect each source's rate limits; the HTTP API has a per-address limit built in (per server instance, so approximate).
 
 Officers' names are shown only where a register publishes them. Birth dates, personal e-mail addresses and private individuals' records are left out. Do not use the tool to profile people.
 

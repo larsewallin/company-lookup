@@ -22,6 +22,13 @@ const ROUTES = {
   '/api/presence': () => require('./api/presence'),
   '/api/presence-report': () => require('./api/presence-report'),
   '/api/bulk-import': () => require('./api/bulk-import'),
+  // Stable v1 routes (docs/api-v1.md): the same handlers with the v1 contract.
+  '/v1/search': () => require('./api/v1/search'),
+  '/v1/company': () => require('./api/v1/company'),
+  '/v1/presence': () => require('./api/v1/presence'),
+  '/v1/presence-report': () => require('./api/v1/presence-report'),
+  '/v1/coverage': () => require('./api/v1/coverage'),
+  '/v1/health': () => require('./api/v1/health'),
 };
 
 const HTML = 'text/html; charset=utf-8';
