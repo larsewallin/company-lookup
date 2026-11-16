@@ -215,7 +215,7 @@ The full company card for one id, from the national register (where one is conne
 | `sic_codes`, `industry`, `other_names`, `extra` | array of string (`extra`: array) | Never null. |
 | `former_names` | array | `{ name, from, to }`. Never null. |
 | `employees`, `size`, `website`, `auditor`, `share_capital` | varies | Where the register publishes them. |
-| `vat` | object | `number` and, after a VIES check, `vies: { valid, name, checked }`. |
+| `vat` | object | `number` and, after a VIES check, `vies: { valid, name, checked, url }`: `valid` boolean, `checked` date, `url` the VIES page to check it yourself. `name` is always `null` since 2026-11-16 (the VIES terms limit passing its results on). |
 | `sole_trader` | boolean | Never null. |
 | `register` | object | `{ name, number, url }` (`url` nullable). |
 

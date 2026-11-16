@@ -2,6 +2,10 @@
 
 Changes to the HTTP API, the MCP server and the library. The `/v1/` contract is in [docs/api-v1.md](docs/api-v1.md): within v1, fields are only added. A breaking change means `/v2/`, announced here and in the README at least 6 months before v1 stops.
 
+## 2026-11-16: VIES results trimmed
+
+- `identity.vat.vies.name` is now always `null` (the field stays), and `identity.vat.vies.url` links to the VIES check. Company Lookup no longer passes on the name or address VIES returns, because the VIES terms limit retransmitting its results. Validity and the date checked are unchanged.
+
 ## 2026-11-16: `/v1/` API
 
 - **New:** stable `/v1/` routes (`search`, `company`, `presence`, `presence-report`, `coverage`) on the same handlers as `/api/*`. Every v1 response has `"api_version": "1"`.

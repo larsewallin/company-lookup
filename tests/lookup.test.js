@@ -563,7 +563,9 @@ test('Wikidata enriches the card; its website feeds the domain-age check; failur
 test('VIES: valid, not valid (Check flag) and unavailable (gap)', async () => {
   const fr = { 'recherche-entreprises': json(200, { results: [FR_MICHELIN] }) };
   let res = await natLookup('fr:424622884', { ...fr, '/ms/FR/vat/62424622884': json(200, { isValid: true, requestDate: '2026-11-08T05:28:11.208Z', userError: 'VALID', name: 'MICHELIN', address: 'LE CLOS GUERIN\n74540 GRUFFY' }) });
-  assert.deepEqual(res.body.identity.vat.vies, { valid: true, name: 'MICHELIN', checked: '2026-11-08' });
+  // VIES name and address are not passed on (VIES terms): validity, date and a link only; `name` stays as null.
+  assert.deepEqual(res.body.identity.vat.vies, { valid: true, name: null, checked: '2026-11-08', url: 'https://ec.europa.eu/taxation_customs/vies/#/vat-validation' });
+  assert.ok(!JSON.stringify(res.body).includes('MICHELIN') || res.body.identity.legal_name.includes('MICHELIN'));
   assert.equal(res.body.verdict, 'clear');
   res = await natLookup('fr:424622884', { ...fr, '/ms/FR/vat/62424622884': json(200, { isValid: false, requestDate: '2026-11-08T05:28:11.208Z', userError: 'INVALID', name: '---' }) });
   assert.equal(res.body.flags[0].label, 'VAT number not valid');
