@@ -2,6 +2,12 @@
 
 Changes to the HTTP API, the MCP server and the library. The `/v1/` contract is in [docs/api-v1.md](docs/api-v1.md): within v1, fields are only added. A breaking change means `/v2/`, announced here and in the README at least 6 months before v1 stops.
 
+## 2026-11-18: search ranking
+
+- Funds (GLEIF category FUND, `kind: "fund"`) now rank after every company across all sources, not only within GLEIF: a search for a ticker no longer opens with ETFs named after it.
+- US: an SEC filer whose EDGAR ticker equals the query goes first, labelled `ticker` (e.g. `eose` → Eos Energy Enterprises, `ticker: "EOSE"`).
+- Names that only contain the query inside a word ("eose" in "Geosearch") are dropped from registers searched by "contains" (New York, Colorado, Connecticut). Number searches and GLEIF's fuzzy matches are unchanged.
+
 ## 2026-11-16: sanctions screening
 
 - **New:** `GET`/`POST /v1/sanctions` and `/api/sanctions`, the MCP tool `screen_sanctions` and `lookup.sanctions()`. They screen company names against the US OFAC (SDN and non-SDN), EU, UN and UK sanctions lists, entities only, refreshed daily by `/api/sanctions-import` (Vercel Cron).
