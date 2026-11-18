@@ -5,7 +5,7 @@ Changes to the HTTP API, the MCP server and the library. The `/v1/` contract is 
 ## 2026-11-18: search ranking
 
 - Funds (GLEIF category FUND, `kind: "fund"`) now rank after every company across all sources, not only within GLEIF: a search for a ticker no longer opens with ETFs named after it.
-- US: an SEC filer whose EDGAR ticker equals the query goes first, labelled `ticker` (e.g. `eose` → Eos Energy Enterprises, `ticker: "EOSE"`).
+- US: a ticker is also looked up in EDGAR's ticker list (`company_tickers.json`, cached a day), and the SEC filer whose ticker equals the query goes first, labelled `ticker` (e.g. `eose` → Eos Energy Enterprises, `ticker: "EOSE"`; the full-text index had missed it).
 - Names that only contain the query inside a word ("eose" in "Geosearch") are dropped from registers searched by "contains" (New York, Colorado, Connecticut). Number searches and GLEIF's fuzzy matches are unchanged.
 
 ## 2026-11-16: sanctions screening

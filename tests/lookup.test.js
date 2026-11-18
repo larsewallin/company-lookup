@@ -632,9 +632,9 @@ test('Wikidata picks the item with a Wikipedia article when an identifier is sha
 // ---------- US, Slovakia, Brazil, Israel, Latvia, Taiwan (fixtures trimmed from real responses, Nov 2026) ----------
 test('US ticker search: the company first, funds named after the ticker last, mid-word names dropped', async () => {
   const routes = {
-    'efts.sec.gov': json(200, { hits: { hits: [
-      { _id: '1667144', _source: { entity: 'Eosera, Inc.' } },
-      { _id: '1805077', _source: { entity: 'Eos Energy Enterprises, Inc. (EOSE, EOSEW)' } }] } }),
+    'efts.sec.gov': json(200, { hits: { hits: [{ _id: '1667144', _source: { entity: 'Eosera, Inc.' } }] } }),
+    // The full-text index missed Eos Energy for "eose"; EDGAR's ticker list has it.
+    'company_tickers.json': json(200, { 0: { cik_str: 1805077, ticker: 'EOSE', title: 'Eos Energy Enterprises, Inc.' } }),
     'data.ny.gov': json(200, [
       { dos_id: '4437818', current_entity_name: 'GEOSEARCH, INC.', initial_dos_filing_date: '2013-07-29T00:00:00.000' },
       { dos_id: '7940783', current_entity_name: 'EOSEOWA LLC', initial_dos_filing_date: '2026-06-11T00:00:00.000' }]),
@@ -644,6 +644,7 @@ test('US ticker search: the company first, funds named after the ticker last, mi
       gl('254900D7XNLJVXC2MF24', 'Defiance Leveraged Long EOSE ETF', 'US', { category: 'FUND' })] }),
     'query.wikidata.org': json(200, { head: {}, results: { bindings: [] } }),
   };
+  require('../lib/registers/us')._resetTickerCache();
   const { search } = createHandlers({ fetchFn: fakeFetch(routes), env: {}, now: () => NOW });
   const res = mockRes(); await search(req({ q: 'eose', country: 'US' }), res);
   const names = res.body.results.map((r) => r.name);
@@ -652,6 +653,7 @@ test('US ticker search: the company first, funds named after the ticker last, mi
   assert.ok(!names.includes('GEOSEARCH, INC.'), 'a name with the query only inside a word is dropped');
   assert.ok(names.includes('EOSEOWA LLC') && names.includes('Eosera, Inc.'));
   assert.deepEqual(names.slice(-2), ['EOSE 2x Daily ETF', 'Defiance Leveraged Long EOSE ETF'], 'funds after every company');
+  assert.equal(res.body.results[0].id, 'us:sec-0001805077');
 });
 
 test('US: search merges SEC and state registers; SEC card shows filings; state flags', async () => {
